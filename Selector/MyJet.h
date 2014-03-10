@@ -24,9 +24,15 @@ public:
 	double neutralHadronEnergy;	
 	double neutralEmEnergy;
 	double chargedHadronEnergy;
+	double photonEnergy;	
 	double chargedEmEnergy;
 	int nConstituents;
+	int chargedHadronMultiplicity;
+	int neutralHadronMultiplicity;	
 	int chargedMultiplicity;
+	int neutralMultiplicity;	
+	int photonMultiplicity;		
+	float bTagDisc;
 	
 /*	Set variables to check for isolation etc. 
 		variables are set in MySelector and chosen
@@ -56,6 +62,10 @@ public:
 		neutralHadronEnergy = x;
 		}
 		
+	void SetPhotonEnergy(double x) {
+		photonEnergy = x;
+		}		
+		
 	void SetChargedEmEnergy(double x) {
 		chargedEmEnergy = x;
 		}
@@ -64,13 +74,33 @@ public:
 		neutralEmEnergy = x;
 		}
 		
+	void SetChargedHadronMultiplicity(int x) {
+		chargedHadronMultiplicity = x;
+		}
+		
+	void SetNeutralHadronMultiplicity(int x) {
+		neutralHadronMultiplicity = x;
+		}			
+		
 	void SetChargedMultiplicity(int x) {
 		chargedMultiplicity = x;
 		}
 		
+	void SetNeutralMultiplicity(int x) {
+		neutralMultiplicity = x;
+		}	
+			
+	void SetPhotonMultiplicity(int x) {
+		photonMultiplicity = x;
+		}		
+		
 	void SetNConstituents(int x) {
 		nConstituents = x;
-		}			
+		}	
+		
+	void SetbTagDiscriminator(int x) {
+		bTagDisc = x;
+		}				
 
 
 
@@ -80,11 +110,13 @@ public:
 		official loose jets (loose ID)!! */
 		
   const bool IsLooseIsolated() {
-    return ( (neutralHadronEnergy / JetE)  			 < 0.99  &&
+    return ( 															pt		 > 30 	&&
+																			fabs(JetEta) < 2.4 &&
+						 (neutralHadronEnergy / JetE)  			 < 0.99  &&
              (neutralEmEnergy / JetE)			 < 0.99 &&
 						  nConstituents						> 1 &&
 
-						 ( (std::abs(JetEta)>= 2.4 ) ||
+						 ( (fabs(JetEta)>= 2.4 ) ||
 					     ( (chargedHadronEnergy / JetE) > 0   &&
                	 (chargedEmEnergy / JetE)   	 < 0.99   &&
 		  				 	  chargedMultiplicity			 > 0 ) ) ); 

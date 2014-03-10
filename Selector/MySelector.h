@@ -11,6 +11,7 @@
 
 #include "MyPhoton.h"
 #include "MyJet.h"
+#include "MyElectron.h"
 #include "MyPfParticle.h"
 #include "MyGenParticles.h"
 #include "HistoWorking.h"
@@ -54,16 +55,22 @@ class MySelector : public DataSelector {
 	 virtual void 	 CreateHisto(const char * name, const char * title, int nBins, double xlow, double xup);
 	 virtual void 	 CreateHisto2D(const char * name, const char * title, int nbinsx, double xlow, double xup, int nbinsy, double ylow,
 	 double yup);
-	// virtual void		 Fill(const char * name, double value);
+	 virtual void 	 CreateHistoArray(const char * name, const char * title, int nBins, const float * bins );
+	// virtual void	  Fill(const char * name, double value);
 	 virtual void		 Fill(const char * name, double value, double weight = 1.);
 	 virtual void		 Fill(const char * name, const char * text, double weight = 1.);
+	 virtual void 	 FillArray(const char * name, double value, double weight = 1.);
+	 virtual void 	 FillArrayInverse(const char * name, double value, double weight = 1.);	 
+	 virtual void 	 FillArraySignificance(const char * name, double value, double weight = 1.);		 
 	 virtual void 	 Fill2(const char * name, double x, double y);
 	 virtual void	   BuildObjects();
 	 virtual void 	 SetLumiWeight(double weight);
+	 virtual void 	 BGInfo(std::string const & BG);	 
 	 virtual void 	 SetPileUpWeightFile( std::string const & filename );
 	 
 	 float getPileUpWeight();
 	 double Eventweight;
+	 string BGName;
    bool 		PassSignalTrigger() const;
    bool 		PassMETTrigger() const;	 
    bool 		PassIsoGammaTrigger() const;	
@@ -76,6 +83,7 @@ class MySelector : public DataSelector {
 	 int RunNumberCheck;
 
 	 vector<MyPhoton> Photons;
+	 vector<MyElectron> Electrons;	 
 	 vector<MyJet> Jets;
 	 vector<MyPfParticle> PfParticles;
 	 vector<MyGenParticles> GenParticles;	 

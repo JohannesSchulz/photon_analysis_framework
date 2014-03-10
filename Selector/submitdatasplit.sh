@@ -50,7 +50,7 @@ for dataset in "${datasets[@]}"; do
         echo cd $HOME/CMSSW_5_3_8_patch3/src >> $script
         echo cmsenv >> $script
         echo cd $HOME/photon_analysis_framework/Selector >> $script
-        echo make >> $script
+        # echo make >> $script
 
         echo ./processData $job_name $outputFileName $files_to_submit >> $script
         chmod +x $script

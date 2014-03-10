@@ -29,6 +29,8 @@ public:
 	double e5x5;	
 	double hcalDepth1;
 	double trackSumHollow;
+	double sigmaIetaIeta;
+	double photon_seedtime;
 	
 /*	Set variables to check for isolation etc. 
 		variables are set in MySelector and chosen
@@ -37,7 +39,9 @@ public:
   void SetPhotonPt(double x) {
     pt = x;
   	}
-		
+  void SetPhotonSeedTime(double x) {
+    photon_seedtime = x;
+  	}		
   void SetPhotonEta(double x) {
     photon_eta = x;
   	}		
@@ -202,7 +206,7 @@ public:
              ChargedHadronIso_corrected()    < 2.6   &&
              NeutralHadronIso_corrected() < 3.5 + 0.04*pt  &&
              PhotonIso_corrected()		 < 1.3 + 0.005*pt &&
-						 nPixelSeeds				 < 1 );
+						 nPixelSeeds				 < 1);
   	}; 
 		
   const bool IsTightIsolated() {
@@ -211,8 +215,17 @@ public:
              ChargedHadronIso_corrected()    < 0.7   &&
              NeutralHadronIso_corrected() < 0.4 + 0.04*pt  &&
              PhotonIso_corrected()		 < 0.5 + 0.005*pt &&
-						 nPixelSeeds				 < 1 );
+						 nPixelSeeds				 < 1);
   	};
+		
+  const bool HasPixelSeed() {
+    return ( hadTowOverEm  			 < 0.05  &&
+             sigmaIetaIeta			 < 0.011 &&
+             ChargedHadronIso_corrected()    < 0.7   &&
+             NeutralHadronIso_corrected() < 0.4 + 0.04*pt  &&
+             PhotonIso_corrected()		 < 0.5 + 0.005*pt &&
+						 nPixelSeeds				 > 0 );
+  	};		
 		
 		// cuts a bit harder
   const bool PassTriggerIsolation() {
@@ -236,7 +249,6 @@ private:
 	double chargedHadronIso_corr;
 	double neutralHadronIso_corr;
 	double photonIso_corr;	 */
-	double sigmaIetaIeta;
 	double sigmaIphiIphi;
 	
 };

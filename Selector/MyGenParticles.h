@@ -19,17 +19,24 @@ public:
 
 
 //	int nPixelSeeds;
-	
+ 	double GenPDGID;
+ 	double GenStatus;	
 	
 /*	Set variables to check for isolation etc. 
 		variables are set in MySelector and chosen
 		from NtupleSelector.h */
 
-  void SetPfPt(double x) {
+  void SetGenPt(double x) {
     pt = x;
   	}
 	
-
+  void SetPDGID(double x) {
+    GenPDGID = x;
+  	}
+		
+  void SetStatus(double x) {
+    GenStatus = x;
+  	}		
 
 private:
 

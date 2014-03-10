@@ -38,6 +38,18 @@ string GJets100 = "GJets_100_200_V02";
 string GJets200 = "GJets_200_400_V02";
 string GJets400 = "GJets_400_inf_V02";
 string GJets = "GJets_V02";
+string G0 = "G_0_15_V07";
+string G15 = "G_15_30_V07";
+string G30 = "G_30_50_V07";
+string G50 = "G_50_80_V07";
+string G80 = "G_80_120_V07";
+string G120 = "G_120_170_V07";
+string G170 = "G_170_300_V07";
+string G300 = "G_300_470_V07";
+string G470 = "G_470_800_V07";
+string G800 = "G_800_1400_V07";
+string G1400 = "G_1400_1800_V07";
+string G1800 = "G_1800_V07";
 string QCD100 = "QCD_100_250_V06";
 string QCD250 = "QCD_250_500_V02";
 string QCD500 = "QCD_500_1000_V02";
@@ -45,6 +57,7 @@ string QCD1000 = "QCD_1000_inf_V02";
 string TTJets = "TTJets_V02";
 string ZGamma = "ZGamma_V02";
 string WJets = "WJets_V02";
+string WGamma = "WGamma_V02";
 string ZGammaNuNu = "ZGammaNuNu_V02";
 string WW_incl = "WW_incl_V06";
 string WZ_incl = "WZ_incl_V06";
@@ -52,7 +65,19 @@ string ZZ_incl = "ZZ_incl_V06";
 string Signal_540_280 = "Signal_540_280";
 string Signal_340_130 = "Signal_340_130";
 string Signal_340_180 = "Signal_340_180";
-string WGamma ="WGamma_V02";
+string Signal_440_430 = "Signal_440_430";
+string Signal_490_480 = "Signal_490_480";
+string Signal_540_530 = "Signal_540_530";
+string Signal_540_480 = "Signal_540_480";
+string Signal_590_580 = "Signal_590_580";
+string Signal_640_630 = "Signal_640_630";
+string Signal_690_680 = "Signal_690_680";
+string Signal_740_730 = "Signal_740_730";
+string Signal_500_500_500 = "Signal_500_500_500";
+string Signal_2000_530_540 = "Signal_2000_530_540";
+string Signal_mu_250_m1_300_m2_600 = "Signal_mu_250_m1_300_m2_600";
+string Signal_mu_350_m1_350_m2_600 = "Signal_mu_350_m1_350_m2_600";
+
 /* total Ngen after Ntuplizer
 
  GJets100 = Ngen = 9662703;
@@ -85,7 +110,56 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		else if ( GJets.compare(argv[1]) == 0 ) {
 		xs = 107.5;
 		Ngen = 9539562;//204239;
+		}	
+		else if ( G0.compare(argv[1]) == 0 ) {
+		xs = 90601456;
+		Ngen = 2000000;//204239;
+		}			
+		else if ( G15.compare(argv[1]) == 0 ) {
+		xs = 200061.7;
+		Ngen = 2000000;//204239;
 		}				
+		else if ( G30.compare(argv[1]) == 0 ) {
+		xs = 19931.62;
+		Ngen = 2000000;//204239;
+		}			
+		else if ( G50.compare(argv[1]) == 0 ) {
+		xs = 3322.309;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G80.compare(argv[1]) == 0 ) {
+		xs = 558.2865;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G120.compare(argv[1]) == 0 ) {
+		xs = 108.0068;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G170.compare(argv[1]) == 0 ) {
+		xs = 30.12207;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G300.compare(argv[1]) == 0 ) {
+		xs = 2.138632;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G470.compare(argv[1]) == 0 ) {
+		xs = 0.2119244;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G800.compare(argv[1]) == 0 ) {
+		xs = 0.007077847;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G1400.compare(argv[1]) == 0 ) {
+		xs = 0.00004510327;
+		Ngen = 2000000;//204239;
+		}		
+		else if ( G1800.compare(argv[1]) == 0 ) {
+		xs = 0.000001867141;
+		Ngen = 2000000;//204239;
+		}			
+				
 		else if ( QCD100.compare(argv[1]) == 0 ) {
 		xs = 10360000;
 		Ngen = 50229518;//500000;
@@ -115,7 +189,7 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		Ngen = 57659905;//500000;
 		}	
 		else if ( ZGammaNuNu.compare(argv[1]) == 0 ) {
-		xs = 0.0283;
+		xs = 0.074;
 		Ngen = 489474;//500000;
 		}		
 		else if ( WW_incl.compare(argv[1]) == 0 ) {
@@ -132,20 +206,67 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		}		
 		else if ( Signal_540_280.compare(argv[1]) == 0 ) {
 		xs = 0.009425;
-		Ngen = 7992;//500000;
-		}		
+		Ngen = 7992;
+		}	
+		else if ( Signal_540_530.compare(argv[1]) == 0 ) {
+		xs = 0.009501;
+		Ngen = 10000;
+		}			
 		else if ( Signal_340_130.compare(argv[1]) == 0 ) {
 		xs = 0.0983;
-		Ngen = 499;//500000;
+		Ngen = 499;
 		}		
 		else if ( Signal_340_180.compare(argv[1]) == 0 ) {
 		xs = 0.09724;
-		Ngen = 5734;//500000;
+		Ngen = 5734;
+		}	
+		else if ( Signal_440_430.compare(argv[1]) == 0 ) {
+		xs = 0.0983;
+		Ngen = 499;
 		}		
-		
+		else if ( Signal_490_480.compare(argv[1]) == 0 ) {
+		xs = 0.01634;
+		Ngen = 5734;
+		}			
+		else if ( Signal_590_580.compare(argv[1]) == 0 ) {
+		xs = 0.005774;
+		Ngen = 10000;
+		}		
+		else if ( Signal_640_630.compare(argv[1]) == 0 ) {
+		xs = 0.00352;
+		Ngen = 10000;
+		}		
+		else if ( Signal_690_680.compare(argv[1]) == 0 ) {
+		xs = 0.002181;
+		Ngen = 10000;
+		}			
+		else if ( Signal_540_480.compare(argv[1]) == 0 ) {
+		xs = 0.009638;
+		Ngen = 10000;
+		}		
+		else if ( Signal_740_730.compare(argv[1]) == 0 ) {
+		xs = 0.001378;
+		Ngen = 10000;
+		}			
+		else if ( Signal_500_500_500.compare(argv[1]) == 0 ) {
+		xs = 0.02674;
+		Ngen = 10000;
+		}		
+		else if ( Signal_2000_530_540.compare(argv[1]) == 0 ) {
+		xs = 0.005434;
+		Ngen = 10000;
+		}				
+		else if ( Signal_mu_250_m1_300_m2_600.compare(argv[1]) == 0 ) {
+		xs = 0.223;
+		Ngen = 1000;
+		}
+		else if ( Signal_mu_350_m1_350_m2_600.compare(argv[1]) == 0 ) {
+		xs = 0.007;
+		Ngen = 1000;
+		}				
 		else if ( WGamma.compare(argv[1]) == 0 ) {
 		xs = 461.6;
-		Ngen = 5000000;//500000;
+		Ngen = 4802358;//500000;
 		}	
 		
 	Eventweight = ( xs / Ngen ) * lumi * lumiPart;
@@ -181,7 +302,7 @@ if ( GJets100.compare(argv[1]) == 0 ) {
   evt->AddGamma135Trigger("HLT_Photon135");
   evt->AddGamma30Trigger("HLT_Photon30");
   evt->AddHLTPhysicsTrigger("HLT_Physics");           
-		 
+	evt->BGInfo( argv[1] );
   evt->Init( tchain );
 	
   Long64_t nentries = evt->fChain->GetEntries();

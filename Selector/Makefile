@@ -12,7 +12,7 @@ LFLAGS = $(SPECIALFLAGS) #-lz
 RCXX=$(SPECIALFLAGS) -Wno-deprecated -Wall $(ROOTCFLAGS)
 RLXX=$(LFLAGS) $(ROOTLIBS) 
 
-SRC=TriggerMap.cc DataSelector.cc MCSelector.cc process.cc MySelector.cc HistoWorking.cc HistoWorking2.cc  MyPhoton.cc MyJet.cc MyPfParticle.cc MyGenParticles.cc
+SRC=TriggerMap.cc DataSelector.cc MCSelector.cc process.cc MySelector.cc HistoWorking.cc HistoWorking2.cc  MyPhoton.cc MyJet.cc MyElectron.cc MyPfParticle.cc MyGenParticles.cc
 
 
 %.MC.o: %.cc
