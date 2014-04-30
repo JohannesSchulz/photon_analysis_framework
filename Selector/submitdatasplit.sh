@@ -3,13 +3,14 @@
 
 datasets=(
 
- srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/PhotonParkedD_V06/
-
+/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/PhotonParkedD_V06/
+ 
+# srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/PhotonParkedD_V06/
 )
 
 # settings
 version="1"
-outputFolder=/scratch/hh/dust/naf/cms/user/schulz/results
+outputFolder=/nfs/dust/cms/user/jschulz/results
 files_per_job=20
 
 fetchScript=getOutputData_${version}.sh
@@ -23,10 +24,18 @@ for dataset in "${datasets[@]}"; do
     # Since root can't handle -, it will be substituted to _
     job_name=$(echo $job_name|sed 's/-/_/g')
 
-    files=( $(srmls -offset 0 -count 999 $dataset|grep root|awk '{print $2 }') )
+    files=( $(dcls $dataset|grep root) )
+#    files=( $(dcls $dataset|grep root|awk '{print $2 }') )
+		
+#		echo $files
+		
     # Ugly hack to get more than 1000 files (up to 2000).
-    files+=( $(srmls -offset 1000 -count 1999 $dataset|grep root|awk '{print $2 }') )
+#    files+=( $(dcls -offset 1000 -count 1999 $dataset|grep root|awk '{print $2 }') )
+#		echo $files
+		echo ${#files[@]}
     number_of_jobs=$(expr \( ${#files[@]} + $files_per_job \) / $files_per_job )
+		
+		echo $number_of_jobs
 
 
 
@@ -37,7 +46,7 @@ for dataset in "${datasets[@]}"; do
         files_to_submit=""
         for (( i=$(expr $job \* $files_per_job - $files_per_job ); i<$(expr $job \* $files_per_job ); i++ )); do
             if [[ "${files[$i]}" != "" ]]; then
-              files_to_submit=$files_to_submit"dcap://dcache-cms-dcap.desy.de"${files[$i]}" "
+              files_to_submit=$files_to_submit"dcap://dcache-cms-dcap.desy.de"${dataset}${files[$i]}" "
             fi
         done # files for one job
         outputFileName=$outputFolder/${jobPrefix}_sel.root
@@ -51,10 +60,11 @@ for dataset in "${datasets[@]}"; do
         echo cmsenv >> $script
         echo cd $HOME/photon_analysis_framework/Selector >> $script
         # echo make >> $script
-
+				
+	#			echo $job_name $outputFileName $files_to_submit
         echo ./processData $job_name $outputFileName $files_to_submit >> $script
         chmod +x $script
-        qsub -b y -j y -l h_cpu=17:00:00 -l site=hh `pwd`/$jobPrefix.sh
+        qsub -P af-cms -b y -j y -l h_rt=24:00:00 -l os=sld5 `pwd`/$jobPrefix.sh
         # i: merge stdout and stderr
         # o: log file
     done # all jobs

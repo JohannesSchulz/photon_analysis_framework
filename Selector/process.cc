@@ -55,9 +55,12 @@ string QCD250 = "QCD_250_500_V02";
 string QCD500 = "QCD_500_1000_V02";
 string QCD1000 = "QCD_1000_inf_V02";
 string TTJets = "TTJets_V02";
+string TTGamma = "TTGamma_V02";
 string ZGamma = "ZGamma_V02";
 string WJets = "WJets_V02";
 string WGamma = "WGamma_V02";
+string WGamma_50_130 = "WGamma_50_130_V07";
+string WGamma_130_inf = "WGamma_130_inf_V07";
 string ZGammaNuNu = "ZGammaNuNu_V02";
 string WW_incl = "WW_incl_V06";
 string WZ_incl = "WZ_incl_V06";
@@ -67,11 +70,18 @@ string Signal_340_130 = "Signal_340_130";
 string Signal_340_180 = "Signal_340_180";
 string Signal_440_430 = "Signal_440_430";
 string Signal_490_480 = "Signal_490_480";
+string Signal_515_505 = "Signal_515_505";
+string Signal_515_480 = "Signal_515_480";
 string Signal_540_530 = "Signal_540_530";
+string Signal_540_505 = "Signal_540_505";
 string Signal_540_480 = "Signal_540_480";
+string Signal_565_555 = "Signal_565_555";
 string Signal_590_580 = "Signal_590_580";
+string Signal_615_605 = "Signal_615_605";
 string Signal_640_630 = "Signal_640_630";
+string Signal_665_655 = "Signal_665_655";
 string Signal_690_680 = "Signal_690_680";
+string Signal_715_705 = "Signal_715_705";
 string Signal_740_730 = "Signal_740_730";
 string Signal_500_500_500 = "Signal_500_500_500";
 string Signal_2000_530_540 = "Signal_2000_530_540";
@@ -180,6 +190,10 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		xs = 245.8; //NNLO
 		Ngen = 6923652;//423652;
 		}
+		else if ( TTGamma.compare(argv[1]) == 0 ) {
+		xs = 2.4; // 2.4 is measurement   2.63 NNLO TTJets times Ratio measured for ttg/tt
+		Ngen = 2414200;//423652;
+		}		
 		else if ( ZGamma.compare(argv[1]) == 0 ) {
 		xs = 123.9;
 		Ngen = 6321549;//456458;
@@ -243,7 +257,36 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		else if ( Signal_540_480.compare(argv[1]) == 0 ) {
 		xs = 0.009638;
 		Ngen = 10000;
+		}	
+		else if ( Signal_540_505.compare(argv[1]) == 0 ) {
+		xs = 0.009539;
+		Ngen = 10000;
 		}		
+		else if ( Signal_515_505.compare(argv[1]) == 0 ) {
+		xs = 0.01238;
+		Ngen = 10000;
+		}	
+		else if ( Signal_515_480.compare(argv[1]) == 0 ) {
+		xs = 0.01241;
+		Ngen = 10000;
+		}			
+		else if ( Signal_565_555.compare(argv[1]) == 0 ) {
+		xs = 0.007475;
+		Ngen = 10000;
+		}		
+		else if ( Signal_615_605.compare(argv[1]) == 0 ) {
+		xs = 0.004457;
+		Ngen = 10000;
+		}		
+		else if ( Signal_665_655.compare(argv[1]) == 0 ) {
+		xs = 0.002764;
+		Ngen = 10000;
+		}		
+		else if ( Signal_715_705.compare(argv[1]) == 0 ) {
+		xs = 0.001715;
+		Ngen = 10000;
+		}				
+			
 		else if ( Signal_740_730.compare(argv[1]) == 0 ) {
 		xs = 0.001378;
 		Ngen = 10000;
@@ -268,6 +311,14 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		xs = 461.6;
 		Ngen = 4802358;//500000;
 		}	
+		else if ( WGamma_50_130.compare(argv[1]) == 0 ) {
+		xs = 1.17;
+		Ngen = 1135698;//500000;
+		}			
+		else if ( WGamma_130_inf.compare(argv[1]) == 0 ) {
+		xs = 0.2571;
+		Ngen = 471458;//500000;
+		}			
 		
 	Eventweight = ( xs / Ngen ) * lumi * lumiPart;
 

@@ -205,8 +205,7 @@ public:
              sigmaIetaIeta			 < 0.012 &&
              ChargedHadronIso_corrected()    < 2.6   &&
              NeutralHadronIso_corrected() < 3.5 + 0.04*pt  &&
-             PhotonIso_corrected()		 < 1.3 + 0.005*pt &&
-						 nPixelSeeds				 < 1);
+             PhotonIso_corrected()		 < 1.3 + 0.005*pt );
   	}; 
 		
   const bool IsTightIsolated() {
@@ -214,17 +213,11 @@ public:
              sigmaIetaIeta			 < 0.011 &&
              ChargedHadronIso_corrected()    < 0.7   &&
              NeutralHadronIso_corrected() < 0.4 + 0.04*pt  &&
-             PhotonIso_corrected()		 < 0.5 + 0.005*pt &&
-						 nPixelSeeds				 < 1);
+             PhotonIso_corrected()		 < 0.5 + 0.005*pt );
   	};
 		
   const bool HasPixelSeed() {
-    return ( hadTowOverEm  			 < 0.05  &&
-             sigmaIetaIeta			 < 0.011 &&
-             ChargedHadronIso_corrected()    < 0.7   &&
-             NeutralHadronIso_corrected() < 0.4 + 0.04*pt  &&
-             PhotonIso_corrected()		 < 0.5 + 0.005*pt &&
-						 nPixelSeeds				 > 0 );
+    return ( nPixelSeeds > 0 );
   	};		
 		
 		// cuts a bit harder

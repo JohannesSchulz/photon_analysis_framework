@@ -12,21 +12,21 @@ LFLAGS = $(SPECIALFLAGS) #-lz
 RCXX=$(SPECIALFLAGS) -Wno-deprecated -Wall $(ROOTCFLAGS)
 RLXX=$(LFLAGS) $(ROOTLIBS) 
 
-SRC=TriggerMap.cc DataSelector.cc MCSelector.cc process.cc MySelector.cc HistoWorking.cc HistoWorking2.cc  MyPhoton.cc MyJet.cc MyElectron.cc MyPfParticle.cc MyGenParticles.cc
-
+SRC=TriggerMap.cc DataSelector.cc MCSelector.cc process.cc MySelector.cc HistoWorking.cc HistoWorking2.cc MyPhoton.cc MyJet.cc MyElectron.cc MyMuon.cc MyPfParticle.cc MyGenParticles.cc MyTracks.cc  MyVertices.cc
 
 %.MC.o: %.cc
 		$(C) $(RCXX)  -D__MC -c $< -o $@
 
 %.Data.o: %.cc
 		$(C) $(RCXX) -D__Data -c $< -o $@
+			
 
 all: MC Data
 
 
 clean:
 	@rm -f *.o 
-	@rm -f processMC processData 
+	@rm -f processMC processData
 
 MC:  $(SRC:.cc=.MC.o)
 	$(LD) $(SRC:.cc=.MC.o) $(RLXX) -lMathMore  -o processMC -D__MC
@@ -35,3 +35,5 @@ MC:  $(SRC:.cc=.MC.o)
 Data: $(SRC:.cc=.Data.o)
 	$(LD) $(SRC:.cc=.Data.o) $(RLXX) -lMathMore  -o processData -D__Data
 	@echo '-> executable processData created.'
+		
+	

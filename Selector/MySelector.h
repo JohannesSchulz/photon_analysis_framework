@@ -2,7 +2,6 @@
 #define MYSELECTOR_H
 
 
-
 #include "TH1F.h"
 #include "TH2F.h"
 #include <map>
@@ -12,8 +11,11 @@
 #include "MyPhoton.h"
 #include "MyJet.h"
 #include "MyElectron.h"
+#include "MyMuon.h"
 #include "MyPfParticle.h"
 #include "MyGenParticles.h"
+#include "MyVertices.h"
+#include "MyTracks.h"
 #include "HistoWorking.h"
 #include "HistoWorking2.h"
 #include "TLorentzVector.h"
@@ -61,7 +63,8 @@ class MySelector : public DataSelector {
 	 virtual void		 Fill(const char * name, const char * text, double weight = 1.);
 	 virtual void 	 FillArray(const char * name, double value, double weight = 1.);
 	 virtual void 	 FillArrayInverse(const char * name, double value, double weight = 1.);	 
-	 virtual void 	 FillArraySignificance(const char * name, double value, double weight = 1.);		 
+	 virtual void 	 FillArraySignificance(const char * name, double value, double weight = 1.);
+	 virtual void 	 FillMETsign(const char * name, double value, double weight = 1.);	 
 	 virtual void 	 Fill2(const char * name, double x, double y);
 	 virtual void	   BuildObjects();
 	 virtual void 	 SetLumiWeight(double weight);
@@ -83,10 +86,13 @@ class MySelector : public DataSelector {
 	 int RunNumberCheck;
 
 	 vector<MyPhoton> Photons;
-	 vector<MyElectron> Electrons;	 
+	 vector<MyElectron> Electrons;	
+	 vector<MyMuon> Muons;	  
 	 vector<MyJet> Jets;
 	 vector<MyPfParticle> PfParticles;
-	 vector<MyGenParticles> GenParticles;	 
+	 vector<MyGenParticles> GenParticles;	
+	 vector<MyVertices> Vertices; 
+	 vector<MyTracks> Tracks;
 	 TLorentzVector MET;
 	 TLorentzVector metMET;
 	 TLorentzVector CaloMET;
