@@ -60,6 +60,7 @@ class MySelector : public DataSelector {
 	 virtual void 	 CreateHistoArray(const char * name, const char * title, int nBins, const float * bins );
 	// virtual void	  Fill(const char * name, double value);
 	 virtual void		 Fill(const char * name, double value, double weight = 1.);
+	 virtual void		 FillPerGev(const char * name, double value, double weight = 1.);	 
 	 virtual void		 Fill(const char * name, const char * text, double weight = 1.);
 	 virtual void 	 FillArray(const char * name, double value, double weight = 1.);
 	 virtual void 	 FillArrayInverse(const char * name, double value, double weight = 1.);	 

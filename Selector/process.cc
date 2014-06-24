@@ -59,9 +59,14 @@ string TTGamma = "TTGamma_V02";
 string ZGamma = "ZGamma_V02";
 string WJets = "WJets_V02";
 string WGamma = "WGamma_V02";
+string WGamma_10_15 = "WGamma_10_15_V07";
+string WGamma_15_20 = "WGamma_15_20_V07";
+string WGamma_20_30 = "WGamma_20_30_V07";
+string WGamma_30_50 = "WGamma_30_50_V07";
 string WGamma_50_130 = "WGamma_50_130_V07";
 string WGamma_130_inf = "WGamma_130_inf_V07";
 string ZGammaNuNu = "ZGammaNuNu_V02";
+string ZGammaLL = "ZGammaLL_V02";
 string WW_incl = "WW_incl_V06";
 string WZ_incl = "WZ_incl_V06";
 string ZZ_incl = "ZZ_incl_V06";
@@ -76,9 +81,17 @@ string Signal_540_530 = "Signal_540_530";
 string Signal_540_505 = "Signal_540_505";
 string Signal_540_480 = "Signal_540_480";
 string Signal_565_555 = "Signal_565_555";
+string Signal_565_530 = "Signal_565_530";
+string Signal_565_505 = "Signal_565_505";
 string Signal_590_580 = "Signal_590_580";
+string Signal_590_555 = "Signal_590_555";
+string Signal_590_530 = "Signal_590_530";
 string Signal_615_605 = "Signal_615_605";
+string Signal_615_580 = "Signal_615_580";
+string Signal_615_555 = "Signal_615_555";
 string Signal_640_630 = "Signal_640_630";
+string Signal_640_605 = "Signal_640_605";
+string Signal_640_580 = "Signal_640_580";
 string Signal_665_655 = "Signal_665_655";
 string Signal_690_680 = "Signal_690_680";
 string Signal_715_705 = "Signal_715_705";
@@ -197,7 +210,11 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		else if ( ZGamma.compare(argv[1]) == 0 ) {
 		xs = 123.9;
 		Ngen = 6321549;//456458;
-		}		
+		}	
+		else if ( ZGammaLL.compare(argv[1]) == 0 ) {
+		xs = 132.6;
+		Ngen = 6588161;//456458;
+		}				
 		else if ( WJets.compare(argv[1]) == 0 ) {
 		xs = 30400; //12503;
 		Ngen = 57659905;//500000;
@@ -207,15 +224,15 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		Ngen = 489474;//500000;
 		}		
 		else if ( WW_incl.compare(argv[1]) == 0 ) {
-		xs = 54.838; //NLO
+		xs = 56.0; //xs = 54.838; //NLO //56.0
 		Ngen = 10000431;//500000;
 		}		
 		else if ( WZ_incl.compare(argv[1]) == 0 ) {
-		xs = 12.63; //LO
+		xs = 33.6;//xs = 12.63; //LO //23.7
 		Ngen = 10000283;//500000;
 		}		
 		else if ( ZZ_incl.compare(argv[1]) == 0 ) {
-		xs = 5.196; //LO
+		xs = 17.0;//xs = 5.196; //LO // 7.6
 		Ngen = 9799908;//500000;
 		}		
 		else if ( Signal_540_280.compare(argv[1]) == 0 ) {
@@ -245,7 +262,23 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		else if ( Signal_590_580.compare(argv[1]) == 0 ) {
 		xs = 0.005774;
 		Ngen = 10000;
+		}	
+		else if ( Signal_590_555.compare(argv[1]) == 0 ) {
+		xs = 0.005769;
+		Ngen = 10000;
 		}		
+		else if ( Signal_590_530.compare(argv[1]) == 0 ) {
+		xs = 0.005806;
+		Ngen = 10000;
+		}	
+		else if ( Signal_640_580.compare(argv[1]) == 0 ) {
+		xs = 0.003553;
+		Ngen = 10000;
+		}				
+		else if ( Signal_640_605.compare(argv[1]) == 0 ) {
+		xs = 0.003534;
+		Ngen = 10000;
+		}				
 		else if ( Signal_640_630.compare(argv[1]) == 0 ) {
 		xs = 0.00352;
 		Ngen = 10000;
@@ -273,7 +306,23 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		else if ( Signal_565_555.compare(argv[1]) == 0 ) {
 		xs = 0.007475;
 		Ngen = 10000;
+		}	
+		else if ( Signal_565_530.compare(argv[1]) == 0 ) {
+		xs = 0.007441;
+		Ngen = 10000;
+		}			
+		else if ( Signal_565_505.compare(argv[1]) == 0 ) {
+		xs = 0.007430;
+		Ngen = 10000;
 		}		
+		else if ( Signal_615_555.compare(argv[1]) == 0 ) {
+		xs = 0.00454;
+		Ngen = 10000;
+		}				
+		else if ( Signal_615_580.compare(argv[1]) == 0 ) {
+		xs = 0.004518;
+		Ngen = 10000;
+		}			
 		else if ( Signal_615_605.compare(argv[1]) == 0 ) {
 		xs = 0.004457;
 		Ngen = 10000;
@@ -311,10 +360,40 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		xs = 461.6;
 		Ngen = 4802358;//500000;
 		}	
+		else if ( WGamma_10_15.compare(argv[1]) == 0 ) {
+		xs = 19.9;
+		Ngen = 2100181;//500000;
+		}			
+		else if ( WGamma_15_20.compare(argv[1]) == 0 ) {
+		xs = 12.4;
+		Ngen = 2025394;//500000;
+		}				
+	/*	else if ( WGamma_20_30.compare(argv[1]) == 0 ) {
+		xs = 13.07;
+		Ngen = 903435;//500000;
+		}			
+		else if ( WGamma_30_50.compare(argv[1]) == 0 ) {
+		xs = 6.9;
+		Ngen = 869591;//500000;
+		}					
 		else if ( WGamma_50_130.compare(argv[1]) == 0 ) {
 		xs = 1.17;
 		Ngen = 1135698;//500000;
+		}		*/	
+		else if ( WGamma_20_30.compare(argv[1]) == 0 ) {
+		xs = 136.347;
+		Ngen = 3000000;//500000;
 		}			
+		else if ( WGamma_30_50.compare(argv[1]) == 0 ) {
+		xs = 75.48;
+		Ngen = 3000000;//500000;
+		}					
+		else if ( WGamma_50_130.compare(argv[1]) == 0 ) {
+		xs = 9.633;
+		Ngen = 3000000;//500000;
+		}
+		
+		
 		else if ( WGamma_130_inf.compare(argv[1]) == 0 ) {
 		xs = 0.2571;
 		Ngen = 471458;//500000;

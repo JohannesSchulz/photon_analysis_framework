@@ -26,6 +26,7 @@ public:
 	double chargedHadronEnergy;
 	double photonEnergy;	
 	double chargedEmEnergy;
+	double jecUncert;	
 	int nConstituents;
 	int chargedHadronMultiplicity;
 	int neutralHadronMultiplicity;	
@@ -48,11 +49,17 @@ public:
 	
   void SetJetEta(double x) {
     JetEta = x;
-  	}	
+		 }			
+		
+	void SetJecUncert(double x) {
+		jecUncert = x;
+		}
+
 	
  /* void SetRho25(double x) {
     rho25 = x;
  	  } */
+	
 	
 	void SetChargedHadronEnergy(double x) {
 		chargedHadronEnergy = x;
