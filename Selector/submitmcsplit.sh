@@ -65,7 +65,7 @@ datasets=(
  
 # srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN=/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_1000-inf_V02/ 
 
-##/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WJets_V02/ 
+#/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WJets_V02/ 
  
 /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/ZGamma_V02/
 
@@ -73,17 +73,17 @@ datasets=(
 
 /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/ZGammaNuNu_V02/ 
  
-/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WGamma_V02/ 
+#/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WGamma_V02/ 
 
 /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WGamma_20_30_V07/ #
 
 /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WGamma_30_50_V07/
-#  
+  
 /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WGamma_50_130_V07/ 
  
 /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/WGamma_130_inf_V07/ 
  
-##/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/TTJets_V02/
+#/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/TTJets_V02/
 
 /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/TTGamma_V02/  #TTGamma is madgraph 8 TeV
 
@@ -101,13 +101,14 @@ datasets=(
 
 /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/ZZ_incl_V06/ 
  
-##/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_100-250_V06/   #no contribution!
+#/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_100-250_V06/   #no contribution!
  
-##/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_250-500_V02/   #no contribution!
+#/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_250-500_V02/   #no contribution!
 
 /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_500-1000_V02/
  
-/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_1000-inf_V02/  
+/pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/QCD_1000-inf_V02/
+  
 
 )
 

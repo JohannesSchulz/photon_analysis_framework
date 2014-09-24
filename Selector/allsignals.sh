@@ -3,6 +3,7 @@
 ./processMC Signal_515_480 signal_515_480.root /nfs/dust/cms/user/jschulz/signals/susyEvents_515_480.root
 ./processMC Signal_540_480 signal_540_480.root /nfs/dust/cms/user/jschulz/signals/susyEvents_540_480.root
 ./processMC Signal_540_530 signal_540_530.root /nfs/dust/cms/user/jschulz/signals/susyEvents_540_530.root
+./processMC Signal_540_530_FULL signal_540_530_FULL.root /nfs/dust/cms/user/jschulz/signals/susyEvents_540_530_FULL.root
 ./processMC Signal_540_505 signal_540_505.root /nfs/dust/cms/user/jschulz/signals/susyEvents_540_505.root
 ./processMC Signal_565_555 signal_565_555.root /nfs/dust/cms/user/jschulz/signals/susyEvents_565_555.root
 ./processMC Signal_565_530 signal_565_530.root /nfs/dust/cms/user/jschulz/signals/susyEvents_565_530.root
@@ -14,9 +15,17 @@
 ./processMC Signal_615_580 signal_615_580.root /nfs/dust/cms/user/jschulz/signals/susyEvents_615_580.root
 ./processMC Signal_615_555 signal_615_555.root /nfs/dust/cms/user/jschulz/signals/susyEvents_615_555.root
 ./processMC Signal_640_630 signal_640_630.root /nfs/dust/cms/user/jschulz/signals/susyEvents_640_630.root
+./processMC Signal_640_630_FULL signal_640_630_FULL.root /nfs/dust/cms/user/jschulz/signals/susyEvents_640_630_FULL.root
+./processMC Signal_640_630_FULL_2 signal_640_630_FULL_2.root /nfs/dust/cms/user/jschulz/signals/susyEvents_640_630_FULL_2.root
 ./processMC Signal_640_605 signal_640_605.root /nfs/dust/cms/user/jschulz/signals/susyEvents_640_605.root
 ./processMC Signal_640_580 signal_640_580.root /nfs/dust/cms/user/jschulz/signals/susyEvents_640_580.root
 ./processMC Signal_665_655 signal_665_655.root /nfs/dust/cms/user/jschulz/signals/susyEvents_665_655.root
 ./processMC Signal_690_680 signal_690_680.root /nfs/dust/cms/user/jschulz/signals/susyEvents_690_680.root
 ./processMC Signal_715_705 signal_715_705.root /nfs/dust/cms/user/jschulz/signals/susyEvents_715_705.root
 ./processMC Signal_740_730 signal_740_730.root /nfs/dust/cms/user/jschulz/signals/susyEvents_740_730.root
+#####
+#####
+./processMC Signal_Bino_1300_1720 signal_B_1300_1720_375_V03.root /nfs/dust/cms/user/jschulz/signals/susyEvents_B_1300_1720_375_V03.root
+./processMC Signal_Bino_1700_1120 signal_B_1700_1120_375_V03.root /nfs/dust/cms/user/jschulz/signals/susyEvents_B_1700_1120_375_V03.root
+./processMC Signal_Wino_1700_720 signal_W_1700_720_375_V03.root /nfs/dust/cms/user/jschulz/signals/susyEvents_W_1700_720_375_V03.root
+./processMC Signal_Wino_900_1720 signal_W_900_1720_375_V03.root /nfs/dust/cms/user/jschulz/signals/susyEvents_W_900_1720_375_V03.root

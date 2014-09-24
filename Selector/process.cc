@@ -78,24 +78,32 @@ string Signal_490_480 = "Signal_490_480";
 string Signal_515_505 = "Signal_515_505";
 string Signal_515_480 = "Signal_515_480";
 string Signal_540_530 = "Signal_540_530";
+string Signal_540_530_FULL = "Signal_540_530_FULL";
 string Signal_540_505 = "Signal_540_505";
 string Signal_540_480 = "Signal_540_480";
 string Signal_565_555 = "Signal_565_555";
 string Signal_565_530 = "Signal_565_530";
 string Signal_565_505 = "Signal_565_505";
 string Signal_590_580 = "Signal_590_580";
-string Signal_590_555 = "Signal_590_555";
 string Signal_590_530 = "Signal_590_530";
+string Signal_590_555 = "Signal_590_555";
 string Signal_615_605 = "Signal_615_605";
 string Signal_615_580 = "Signal_615_580";
 string Signal_615_555 = "Signal_615_555";
 string Signal_640_630 = "Signal_640_630";
+string Signal_640_630_FULL = "Signal_640_630_FULL";
+string Signal_640_630_FULL_2 = "Signal_640_630_FULL_2";
 string Signal_640_605 = "Signal_640_605";
 string Signal_640_580 = "Signal_640_580";
 string Signal_665_655 = "Signal_665_655";
 string Signal_690_680 = "Signal_690_680";
 string Signal_715_705 = "Signal_715_705";
 string Signal_740_730 = "Signal_740_730";
+string Signal_Bino_1300_1720 = "Signal_Bino_1300_1720";
+string Signal_Bino_1700_1120 = "Signal_Bino_1700_1120";
+string Signal_Wino_1700_720 = "Signal_Wino_1700_720";
+string Signal_Wino_900_1720 = "Signal_Wino_900_1720";
+
 string Signal_500_500_500 = "Signal_500_500_500";
 string Signal_2000_530_540 = "Signal_2000_530_540";
 string Signal_mu_250_m1_300_m2_600 = "Signal_mu_250_m1_300_m2_600";
@@ -234,15 +242,37 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		else if ( ZZ_incl.compare(argv[1]) == 0 ) {
 		xs = 17.0;//xs = 5.196; //LO // 7.6
 		Ngen = 9799908;//500000;
-		}		
+		}	
 		else if ( Signal_540_280.compare(argv[1]) == 0 ) {
 		xs = 0.009425;
 		Ngen = 7992;
 		}	
+		else if ( Signal_Bino_1300_1720.compare(argv[1]) == 0 ) {
+		xs = 0.005325;
+		Ngen = 10000;
+		}		
+		else if ( Signal_Bino_1700_1120.compare(argv[1]) == 0 ) {
+		xs = 0.0097;
+		Ngen = 10000;
+		}			
+		else if ( Signal_Wino_1700_720.compare(argv[1]) == 0 ) {
+		xs = 0.3164;
+		Ngen = 60000;
+		}	
+		else if ( Signal_Wino_900_1720.compare(argv[1]) == 0 ) {
+		xs = 0.75;
+		Ngen = 60000;
+		}			
+		
+			
 		else if ( Signal_540_530.compare(argv[1]) == 0 ) {
 		xs = 0.009501;
 		Ngen = 10000;
-		}			
+		}
+		else if ( Signal_540_530_FULL.compare(argv[1]) == 0 ) {
+		xs = 0.009566;
+		Ngen = 4000;
+		}					
 		else if ( Signal_340_130.compare(argv[1]) == 0 ) {
 		xs = 0.0983;
 		Ngen = 499;
@@ -257,7 +287,7 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		}		
 		else if ( Signal_490_480.compare(argv[1]) == 0 ) {
 		xs = 0.01634;
-		Ngen = 5734;
+		Ngen = 10000;
 		}			
 		else if ( Signal_590_580.compare(argv[1]) == 0 ) {
 		xs = 0.005774;
@@ -283,6 +313,15 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		xs = 0.00352;
 		Ngen = 10000;
 		}		
+		else if ( Signal_640_630_FULL.compare(argv[1]) == 0 ) {
+		xs = 0.003574;
+		Ngen = 1300;
+		}
+		else if ( Signal_640_630_FULL_2.compare(argv[1]) == 0 ) {
+		xs = 0.003520;
+		Ngen = 10000;
+		}		
+					
 		else if ( Signal_690_680.compare(argv[1]) == 0 ) {
 		xs = 0.002181;
 		Ngen = 10000;
