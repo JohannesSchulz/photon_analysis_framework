@@ -869,7 +869,6 @@ if ( GJets100.compare(argv[1]) == 0 ) {
 		Ngen = 162553;//500000;
 		}
 
-
 	
 	Eventweight = ( xs / Ngen ) * lumi * lumiPart;
 
