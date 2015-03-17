@@ -35,9 +35,9 @@ unsigned int HistoWorking::size()
 
 void HistoWorking::Write(const char * name)
 {
-  TFile f(name, "RECREATE");
+ // TFile f(name, "UPDATE");
   for (unsigned int i = 0; i < size(); i++) {
     histo[hname[i]]->Write();
   }
-  f.Close();
+//  f.Close();
 }

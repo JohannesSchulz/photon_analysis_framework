@@ -20,6 +20,7 @@
 #include "HistoWorking2.h"
 #include "TLorentzVector.h"
 
+
 #ifdef __MC
 
 #include "MCSelector.h"
@@ -43,6 +44,7 @@ class MySelector : public DataSelector {
 
    virtual Int_t   Version() const { return 2; }
 	 void 					 AddSignalTrigger(TString const& v) { SignalNames.push_back(v + "_v*"); }
+	 void 					 AddPhotonHadTrigger(TString const& v) { PhotonHadNames.push_back(v + "_v*"); }	 
 	 void 					 AddMETTrigger(TString const& v) { METNames.push_back(v + "_v*"); }
 	 void 					 AddIsoGammaTrigger(TString const& v) { IsoGammaNames.push_back(v + "_v*"); }
 	 void 					 AddDisplacedTrigger(TString const& v) { DisplacedNames.push_back(v + "_v*"); }
@@ -71,11 +73,13 @@ class MySelector : public DataSelector {
 	 virtual void 	 SetLumiWeight(double weight);
 	 virtual void 	 BGInfo(std::string const & BG);	 
 	 virtual void 	 SetPileUpWeightFile( std::string const & filename );
+	 TTree* GetPdfTree(){ return pdfTree;}
 	 
 	 float getPileUpWeight();
 	 double Eventweight;
 	 string BGName;
    bool 		PassSignalTrigger() const;
+   bool 		PassPhotonHadTrigger() const;	 
    bool 		PassMETTrigger() const;	 
    bool 		PassIsoGammaTrigger() const;	
    bool 		PassDisplacedTrigger() const;	 
@@ -95,6 +99,7 @@ class MySelector : public DataSelector {
 	 vector<MyVertices> Vertices; 
 	 vector<MyTracks> Tracks;
 	 TLorentzVector MET;
+	 TLorentzVector TypeOneMET; 
 	 TLorentzVector metMET;
 	 TLorentzVector CaloMET;
 	 
@@ -112,8 +117,11 @@ class MySelector : public DataSelector {
    bool QcdWeightSelection() const;
    bool IsTightPhoton(unsigned i) const;
    bool IsLoosePhoton(unsigned i) const;
+   TTree* pdfTree;
+   float pdf_x1, pdf_x2, pdf_scale, pdf_id1, pdf_id2, pdf_weight, pdf_selected;
 	 
 	 protected:
+	 std::vector<TString> PhotonHadNames;	 
 	 std::vector<TString> SignalNames;
 	 std::vector<TString> METNames;
 	 std::vector<TString> IsoGammaNames;   

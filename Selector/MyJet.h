@@ -26,7 +26,8 @@ public:
 	double chargedHadronEnergy;
 	double photonEnergy;	
 	double chargedEmEnergy;
-	double jecUncert;	
+	double jecUncert;		
+	double jecScale;	
 	int nConstituents;
 	int chargedHadronMultiplicity;
 	int neutralHadronMultiplicity;	
@@ -55,7 +56,9 @@ public:
 		jecUncert = x;
 		}
 
-	
+	void SetJecScale(double x) {
+		jecScale = x;
+		}	
  /* void SetRho25(double x) {
     rho25 = x;
  	  } */
@@ -123,7 +126,7 @@ public:
              (neutralEmEnergy / JetE)			 < 0.99 &&
 						  nConstituents						> 1 &&
 
-						 ( (fabs(JetEta)>= 2.4 ) ||
+						 ( (fabs(JetEta) < 2.4 ) ||
 					     ( (chargedHadronEnergy / JetE) > 0   &&
                	 (chargedEmEnergy / JetE)   	 < 0.99   &&
 		  				 	  chargedMultiplicity			 > 0 ) ) ); 
@@ -132,7 +135,6 @@ public:
 private:
 
 	double pt;
-
 
 };
 

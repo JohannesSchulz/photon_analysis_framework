@@ -43,6 +43,19 @@ bool MySelector::PassSignalTrigger() const
   return false;
 }
 
+bool MySelector::PassPhotonHadTrigger() const
+{
+  unsigned nT(PhotonHadNames.size());
+  if(nT == 0) return true;
+
+  for(unsigned int i = 0; i != nT; ++i){
+
+    if(hltMap.pass(PhotonHadNames[i])) return true;
+
+	}
+  return false;
+}
+
 bool MySelector::PassMETTrigger() const
 {
   unsigned nT(METNames.size());
@@ -166,12 +179,14 @@ void MySelector::SlaveBegin(TTree * tree)
    float scalebinning30[] = {0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,28,30,32,36,40,45,50,70};		 
    float scalebinning24[] = {0,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,12,13,14,15,16,17,18,19,40}; 
    float scalebinning17[] = {0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,40};
-   float scalebinning12[] = {0,4,5,6,7,8,9,10,11,12,13,15,40};	 
+   float scalebinning12[] = {0,4,5,6,7,8,9,10,11,12,13,15,40};
+   float scalebinning16[] = {0,4,5,6,7,8,9,10,11,12,13,15,17,19,22,30,40}; 	 	 
    float METsign39[] = {0,15,17.5,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,42,44,46,48,50,52.5,55,57.5,60,65,70,80,90,110,140,400};	 	
    float METsign23[] = {0,16,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,55,60,70,90,130,400};
    float METsign14[] = {0,15,22,26,30,34,40,46,60,80,100,140,180,230,350};
    float METsign32[] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,110,120,130,140,150,160,170,180,190,200,230,500};	 
    float METsign10[] = {0,20,40,60,80,100,120,150,180,210,500}; 
+   float METsign13[] = {0,20,40,60,80,100,120,140,170,200,230,300,400,500};	 
    float Sigma7[] = {0,160,320,480,640,800,1120,2000};  		 
 	 float scalebinningPtOverMET[] = {0,0.4,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.2,3.4,3.6,3.8,4.0,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.0,7.5,8.0,10,12};		 
 	 float HTbinning[] = {0,75,100,125,150,175,200,225,250,275,300,325,350,375,400,425,450,475,500,550,600,650,700,750,800,850,900,950,1000,1050,1100,1150,1200,1300,1400,1500,1750,2000,3000};		
@@ -200,17 +215,26 @@ void MySelector::SlaveBegin(TTree * tree)
 //	 Fi ll("h_cu tflow","tight #gamma p_{T}>100", 0);	  	 	   
 	 Fill("h_cutflow","CR + SR", 0);
 	 Fill("h_cutflow","SR", 0);
-	 	 	
+
+	pdfTree = new TTree("pdfTree", "pdf uncertainty calculation");
+	pdfTree->Branch("x2", &pdf_x2, "x2/F");
+	pdfTree->Branch("x1", &pdf_x1, "x1/F");
+ 	pdfTree->Branch("scale", &pdf_scale, "scale/F");
+	pdfTree->Branch("id1", &pdf_id1, "id1/F");
+	pdfTree->Branch("id2", &pdf_id2, "id2/F");
+	pdfTree->Branch("weight", &pdf_weight, "weight/F");
+	pdfTree->Branch("selected", &pdf_selected, "selected/F");
+
   #ifdef __Data
 	
-    CreateHisto("h_denumerator_bypass_tight_MET_2", "MET [GeV]", 80, 0, 400);				
-    CreateHisto("h_numerator_bypass_tight_MET_2","MET [GeV]", 80, 0, 400);									
-    CreateHisto("h_denumerator_bypass_tight_2", "MET [GeV]", 80, 0, 400);				
-    CreateHisto("h_numerator_bypass_tight_2", "MET [GeV]", 80, 0, 400);									
-    CreateHisto("h_denumerator_bypass_loose_MET_2", "MET [GeV]", 80, 0, 400);				
-    CreateHisto("h_numerator_bypass_loose_MET_2","MET [GeV]", 80, 0, 400);									
-    CreateHisto("h_denumerator_bypass_loose_2","MET [GeV]", 80, 0, 400);				
-    CreateHisto("h_numerator_bypass_loose_2", "MET [GeV]", 80, 0, 400);									
+    CreateHisto("h_denumerator_bypass_tight_MET_2", "MET (GeV)", 80, 0, 400);				
+    CreateHisto("h_numerator_bypass_tight_MET_2","MET (GeV)", 80, 0, 400);									
+    CreateHisto("h_denumerator_bypass_tight_2", "MET (GeV)", 80, 0, 400);				
+    CreateHisto("h_numerator_bypass_tight_2", "MET (GeV)", 80, 0, 400);									
+    CreateHisto("h_denumerator_bypass_loose_MET_2", "MET (GeV)", 80, 0, 400);				
+    CreateHisto("h_numerator_bypass_loose_MET_2","MET (GeV)", 80, 0, 400);									
+    CreateHisto("h_denumerator_bypass_loose_2","MET (GeV)", 80, 0, 400);				
+    CreateHisto("h_numerator_bypass_loose_2", "MET (GeV)", 80, 0, 400);									
 
 		
     CreateHisto("h_denumerator_r9_2", "tight photon r9[0]",130, 0, 1.3 );
@@ -259,54 +283,54 @@ void MySelector::SlaveBegin(TTree * tree)
 		CreateHisto("h_numerator_final_pt_leg_tight_40_2", "Photons[tight_photons[0]].Pt()",80,0,400);	
 		CreateHisto("h_denumerator_final_pt_leg_tight_40_2", "Photons[tight_photons[0]].Pt()",80,0,400);		
 		
-		CreateHisto("h_numerator_final_pt_leg_tight_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_pt_leg_tight_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_ID_leg_tight_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_ID_leg_tight_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_ID_leg_tight_wo_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_ID_leg_tight_wo_1", "photon pt [GeV]", 80, 0, 400); 		
+		CreateHisto("h_numerator_final_pt_leg_tight_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_pt_leg_tight_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_ID_leg_tight_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_ID_leg_tight_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_ID_leg_tight_wo_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_ID_leg_tight_wo_1", "photon pt (GeV)", 80, 0, 400); 		
 				
-		CreateHisto("h_numerator_final_met_leg_tight_1", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_met_leg_tight_1", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_pt_leg_tight_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_pt_leg_tight_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_pt_leg_tight_woMETcut_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_pt_leg_tight_woMETcut_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_met_leg_tight_2", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_met_leg_tight_2", "MET [GeV]", 80, 0, 400); 	
+		CreateHisto("h_numerator_final_met_leg_tight_1", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_met_leg_tight_1", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_pt_leg_tight_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_pt_leg_tight_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_pt_leg_tight_woMETcut_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_pt_leg_tight_woMETcut_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_met_leg_tight_2", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_met_leg_tight_2", "MET (GeV)", 80, 0, 400); 	
 		
-		CreateHisto("h_numerator_final_pt_leg_loose_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_pt_leg_loose_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_ID_leg_loose_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_ID_leg_loose_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_ID_leg_loose_wo_1", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_ID_leg_loose_wo_1", "photon pt [GeV]", 80, 0, 400); 		
+		CreateHisto("h_numerator_final_pt_leg_loose_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_pt_leg_loose_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_ID_leg_loose_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_ID_leg_loose_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_ID_leg_loose_wo_1", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_ID_leg_loose_wo_1", "photon pt (GeV)", 80, 0, 400); 		
 				
-		CreateHisto("h_numerator_final_met_leg_loose_1", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_met_leg_loose_1", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_pt_leg_loose_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_pt_leg_loose_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_pt_leg_loose_woMETcut_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_pt_leg_loose_woMETcut_2", "photon pt [GeV]", 80, 0, 400); 
-		CreateHisto("h_numerator_final_met_leg_loose_2", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_met_leg_loose_2", "MET [GeV]", 80, 0, 400);		
+		CreateHisto("h_numerator_final_met_leg_loose_1", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_met_leg_loose_1", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_pt_leg_loose_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_pt_leg_loose_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_pt_leg_loose_woMETcut_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_pt_leg_loose_woMETcut_2", "photon pt (GeV)", 80, 0, 400); 
+		CreateHisto("h_numerator_final_met_leg_loose_2", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_met_leg_loose_2", "MET (GeV)", 80, 0, 400);		
 		
-		CreateHisto("h_numerator_final_met_leg_loose_wo", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_final_met_leg_loose_wo", "MET [GeV]", 80, 0, 400);	
+		CreateHisto("h_numerator_final_met_leg_loose_wo", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_final_met_leg_loose_wo", "MET (GeV)", 80, 0, 400);	
 		
-		CreateHisto("h_numerator_MET_calc", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_MET_calc", "MET [GeV]", 80, 0, 400);
+		CreateHisto("h_numerator_MET_calc", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_MET_calc", "MET (GeV)", 80, 0, 400);
 		
-		CreateHisto("h_numerator_MET_calc_selection", "MET [GeV]", 25, 0, 1000); 
-		CreateHisto("h_denumerator_MET_calc_selection", "MET [GeV]", 25, 0, 1000);		
-		CreateHisto("h_numerator_PT_calc_selection", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000); 
-		CreateHisto("h_denumerator_PT_calc_selection", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000);	
-		CreateHisto("h_numerator_PT_calc_MET40", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000); 
-		CreateHisto("h_denumerator_PT_calc_MET40", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000);			
-		CreateHisto("h_numerator_PT_calc_selection_40", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000); 
-		CreateHisto("h_denumerator_PT_calc_selection_40", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000);								
-		CreateHisto("h_numerator_PT_calc_selection_100", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000); 
-		CreateHisto("h_denumerator_PT_calc_selection_100", "1st #gamma_{loose} p_{T} [GeV]", 25, 0, 1000);
+		CreateHisto("h_numerator_MET_calc_selection", "MET (GeV)", 25, 0, 1000); 
+		CreateHisto("h_denumerator_MET_calc_selection", "MET (GeV)", 25, 0, 1000);		
+		CreateHisto("h_numerator_PT_calc_selection", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000); 
+		CreateHisto("h_denumerator_PT_calc_selection", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000);	
+		CreateHisto("h_numerator_PT_calc_MET40", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000); 
+		CreateHisto("h_denumerator_PT_calc_MET40", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000);			
+		CreateHisto("h_numerator_PT_calc_selection_40", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000); 
+		CreateHisto("h_denumerator_PT_calc_selection_40", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000);								
+		CreateHisto("h_numerator_PT_calc_selection_100", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000); 
+		CreateHisto("h_denumerator_PT_calc_selection_100", "1st #gamma_{loose} p_{T} (GeV)", 25, 0, 1000);
 	  
 		CreateHisto("h_signal_pt", "Photons[0].Pt()",150, 0, 300);		
     CreateHisto("h_signal_r9", "photons_photons_r9[0]",130, 0, 1.3 );
@@ -369,8 +393,8 @@ void MySelector::SlaveBegin(TTree * tree)
 		
 		CreateHisto("h_denumerator_selection_pt", "Photons[loose_photons[0]].Pt()", 80, 0, 400);
 		CreateHisto("h_numerator_selection_pt", "Photons[loose_photons[0]].Pt()", 80, 0, 400);
-		CreateHisto("h_numerator_selection_met", "MET [GeV]", 80, 0, 400); 
-		CreateHisto("h_denumerator_selection_met", "MET [GeV]", 80, 0, 400); 	
+		CreateHisto("h_numerator_selection_met", "MET (GeV)", 80, 0, 400); 
+		CreateHisto("h_denumerator_selection_met", "MET (GeV)", 80, 0, 400); 	
 	  CreateHisto("h_denumerator_vert", "# of vertices", 40, -0.5, 39.5);
 	  CreateHisto("h_numerator_vert", "# of vertices", 40, -0.5, 39.5);		
 	  CreateHisto("h_denumerator_vert_100", "# of vertices", 40, -0.5, 39.5);		
@@ -383,20 +407,20 @@ void MySelector::SlaveBegin(TTree * tree)
 		CreateHisto("h_denumerator_selection_pt_leg_met_sign","#slash{E}_{T} significance",80,0,600);				
 			
 		CreateHisto("h_denumerator_selection_met_sign","#slash{E}_{T} significance",80,0,600);
-		CreateHisto("h_denumerator_selection_trans_mass","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",80,0,1000);
-		CreateHisto("h_denumerator_selection_sigma","#Sigma [GeV]",80,0,1600);			 			 
+		CreateHisto("h_denumerator_selection_trans_mass","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",80,0,1000);
+		CreateHisto("h_denumerator_selection_sigma","#Sigma (GeV)",80,0,1600);			 			 
 
 		CreateHisto("h_denumerator_selection_met_sign_met_cut","#slash{E}_{T} significance",80,0,600);
-		CreateHisto("h_denumerator_selection_trans_mass_met_cut","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",80,0,1000);
-		CreateHisto("h_denumerator_selection_sigma_met_cut","#Sigma [GeV]",80,0,1600);						
+		CreateHisto("h_denumerator_selection_trans_mass_met_cut","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",80,0,1000);
+		CreateHisto("h_denumerator_selection_sigma_met_cut","#Sigma (GeV)",80,0,1600);						
 
 		CreateHisto("h_numerator_selection_met_sign","#slash{E}_{T} significance",80,0,600);
-		CreateHisto("h_numerator_selection_trans_mass","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",80,0,1000);
-		CreateHisto("h_numerator_selection_sigma",	"#Sigma [GeV]",80,0,1600);				 					 					 
+		CreateHisto("h_numerator_selection_trans_mass","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",80,0,1000);
+		CreateHisto("h_numerator_selection_sigma",	"#Sigma (GeV)",80,0,1600);				 					 					 
 
 		CreateHisto("h_numerator_selection_met_sign_met_cut","#slash{E}_{T} significance",80,0,600);
-		CreateHisto("h_numerator_selection_trans_mass_met_cut","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",80,0,1000);
-		CreateHisto("h_numerator_selection_sigma_met_cut",	"#Sigma [GeV]",80,0,1600);	
+		CreateHisto("h_numerator_selection_trans_mass_met_cut","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",80,0,1000);
+		CreateHisto("h_numerator_selection_sigma_met_cut",	"#Sigma (GeV)",80,0,1600);	
 					 
 					 					
 		CreateHisto("h_denumerator_loose_eta", "Photons[loose_photons[0]].Pt()", 250, 0, 500);
@@ -496,7 +520,11 @@ void MySelector::SlaveBegin(TTree * tree)
 	  
 	 CreateHisto("h_triggereff_photonptcross_mytrigger_2", "MET, pass trigger", 60, 0, 120); 
 	 CreateHisto("h_triggereff_photonptcross_crosstrigger_2", "MET, pass iso photon pt > 30 crosstrigger", 60, 0, 120);
- 
+	
+	 CreateHisto("h_upper_right_SR_ht_trigger_fired","H_{T} (GeV)",50,0,2000);		
+	 CreateHisto("h_upper_left_SR_ht_trigger_fired","H_{T} (GeV)",50,0,2000);	
+	 CreateHisto("h_lower_left_SR_ht_trigger_fired","H_{T} (GeV)",50,0,2000);
+	 CreateHisto("h_lower_right_SR_ht_trigger_fired","H_{T} (GeV)",50,0,2000);	 
 	 
 	 CreateHisto("h_effitest", "Trigger efficiency", 13, -0.15, 1.15);
 	 CreateHisto2D("h_2_effitest", "Trigger efficiency", 13, -0.15, 1.15, 2000, 0, 2000);
@@ -505,10 +533,10 @@ void MySelector::SlaveBegin(TTree * tree)
   #endif				
 						
 	 CreateHisto("h_photon_seedTime", "seed time of 1st tight photon ", 100, -100,100);	
-	 CreateHisto("h_tight_photons_pt_cut_flow","1st #gamma_{tight} p_{T} [GeV]", 100, 0, 1000);
+	 CreateHisto("h_tight_photons_pt_cut_flow","1st #gamma_{tight} p_{T} (GeV)", 100, 0, 1000);
 	 
-   CreateHisto("h_photon_pt_for_control","1st #gamma_{tight} p_{T} [GeV]", 100, 0, 1000);	
-   CreateHisto("h_ht_for_control","H_{T} [GeV]",100,0,2000);	 
+   CreateHisto("h_photon_pt_for_control","1st #gamma_{tight} p_{T} (GeV)", 100, 0, 1000);	
+   CreateHisto("h_ht_for_control","H_{T} (GeV)",100,0,2000);	 
 	 CreateHisto("h_truth_ht", "ht on GEN level for status 1 ", 200, 0, 1000);
 	 CreateHisto("h_truth_photon_pt", "pt of photons (22) on GEN level for status 1 ", 36, 0, 400);	
 	 CreateHisto("h_truth_photons_pt_sel", "pt of photons (22) on GEN level for status 1 ", 36, 0, 500);	
@@ -530,7 +558,7 @@ void MySelector::SlaveBegin(TTree * tree)
 	 								 
 	 CreateHisto("h_ht_before_preselection","H_{T} of all jets", 100, 0, 1000);
 	 CreateHisto("h_ht_before_pre","H_{T} of all jets", 100, 0, 1000);	 
-	 CreateHisto("h_met_before_preselection","#slash{E}_{T} [GeV]",100,0,600);		
+	 CreateHisto("h_met_before_preselection","#slash{E}_{T} (GeV)",100,0,600);		
 		
 									 				 
 	 CreateHisto("h_photon_HE","H Tower over E", 100, 0, 1);
@@ -546,20 +574,21 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_met_nach", "MET", 50, 50, 600);
 	 
 	 
-	 CreateHisto("h_met", "#slash{E}_{T} [GeV]", 50, 50, 600);
-	 CreateHistoArray("h_met_orth", "#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_orth", "1st tight #gamma pt [GeV]", 40, 30, 110);	 	 
+	 CreateHisto("h_met", "#slash{E}_{T} (GeV)", 50, 50, 600);
+	 CreateHisto("h_TypeOneMet", "Type 1 corrected #slash{E}_{T} (GeV)", 50, 50, 600);	 
+	 CreateHistoArray("h_met_orth", "#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_orth", "1st tight #gamma pt (GeV)", 40, 30, 110);	 	 
 	 CreateHisto("h_met_nJetmax2", "#slash{E}_{T}", 50, 50, 600);	 
 	 CreateHisto("h_met_nJetmin3", "#slash{E}_{T}", 50, 50, 600);	
 	 CreateHisto("h_met_npixel0", "#slash{E}_{T}", 50, 50, 600);	 
 	 CreateHisto("h_met_npixel1", "#slash{E}_{T}", 50, 50, 600);	 	 
-	 CreateHistoArray("h_met_array", "#slash{E}_{T} [GeV]", 10, metbinning);	 
-	 CreateHisto("h_met_cut", "#slash{E}_{T} [GeV]", 50, 50, 600);	 
-	 CreateHisto("h_inverse_MET", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
-	 CreateHistoArray("h_inverse_MET_array", "#slash{E}_{T}^{-1} [GeV^{-1}]", 14, inversemetbinning);	 
-	 CreateHisto("h_inverse_MET_sig", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);	
-	 CreateHisto("h_inverse_MET_GJets", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);	  
-	 CreateHisto("h_inverse_MET_cut", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHistoArray("h_met_array", "#slash{E}_{T} (GeV)", 10, metbinning);	 
+	 CreateHisto("h_met_cut", "#slash{E}_{T} (GeV)", 50, 50, 600);	 
+	 CreateHisto("h_inverse_MET", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
+	 CreateHistoArray("h_inverse_MET_array", "#slash{E}_{T}^{-1} (GeV^{-1})", 14, inversemetbinning);	 
+	 CreateHisto("h_inverse_MET_sig", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);	
+	 CreateHisto("h_inverse_MET_GJets", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);	  
+	 CreateHisto("h_inverse_MET_cut", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 	 
    CreateHisto("h_n_photon_2", " # of loose photons",10, -0.5, 9.5);	 	 
 	 CreateHisto("h_n_photon", "# of photons", 10, -0.5, 9.5);	 
@@ -572,7 +601,6 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_n_jets_loose", "# of loose jets", 10, -0.5, 9.5);
 	 CreateHisto("h_n_jets_cleaned", "# of cleaned jets", 10, -0.5, 9.5);
 	 CreateHisto("h_n_jets_photon_matched", "# of photon matched jets", 10, -0.5, 9.5);	 
-	 CreateHisto("h_n_cleaned_jets_low", "# of cleaned jets", 10, -0.5, 9.5);	 
 	 CreateHisto("h_n_bJets", "# of b jets", 10, -0.5, 9.5);	 
 	 CreateHisto("h_n_bJets2", "# of b jets", 10, -0.5, 9.5);	 	 
 	 CreateHisto("h_n_electrons_medium", "# of medium electrons", 10, -0.5, 9.5);
@@ -583,9 +611,10 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_sum_pt", "sum_pt",60,0,3000);
 	 CreateHisto("h_centrality", "centrality",22,0,1.1);
 	 CreateHisto("h_centrality_photon", "centrality",22,0,1.1);	 
-	 CreateHisto("h_sum_signal","#Sigma [GeV]",50,0,2000);	 
-	 CreateHisto("h_sum_visible","#Sigma [GeV]",50,0,2000);	 
-	 CreateHistoArray("h_sum_signal_per_gev","#Sigma [GeV]",7,Sigma7); 
+	 CreateHisto("h_sum_signal","S_{T}^{#gamma} (GeV)",50,0,2000);
+	 CreateHisto("h_ST_TypeOne","corrected S_{T}^{#gamma} (GeV)",50,0,2000);	 	 
+	 CreateHisto("h_sum_visible","S_{T}^{#gamma} (GeV)",50,0,2000);	 
+	 CreateHistoArray("h_sum_signal_per_gev","S_{T}^{#gamma} (GeV)",7,Sigma7); 
 		 
 	 CreateHisto("h_sum_pt_photons_low", "sum_photon_pt",50,0,1000);
 	 CreateHisto("h_sum_pt_low", "sum_pt",60,0,2000);
@@ -605,29 +634,29 @@ void MySelector::SlaveBegin(TTree * tree)
 	 
 	 //control regions	 
 	 CreateHisto("h_n_loose_photons_control2", " # of loose photons",10, -0.5, 9.5);	
-   CreateHistoArray("h_HT_array_control2","H_{T} of all jets [GeV]", 38, HTbinning);
+   CreateHistoArray("h_HT_array_control2","H_{T} of all jets (GeV)", 38, HTbinning);
 	 CreateHistoArray("h_1tightPhotonPtOverMET_control2","#gamma_{tight} p_{T} / #slash{E}_{T}", 43, scalebinningPtOverMET );	 
 	 CreateHistoArray("h_METoverSqHT_control2","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",30,scalebinning30);	 
-	 CreateHistoArray("h_met_control2","#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_control2","1st loose #gamma pt [GeV]", 50, 30, 1000);
+	 CreateHistoArray("h_met_control2","#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_control2","1st loose #gamma pt (GeV)", 50, 30, 1000);
 	 CreateHisto("h_n_loose_photons_control3", " # of loose photons",10, -0.5, 9.5);					
-	 CreateHistoArray("h_HT_array_control3","H_{T} of all jets [GeV]", 38, HTbinning);
+	 CreateHistoArray("h_HT_array_control3","H_{T} of all jets (GeV)", 38, HTbinning);
 	 CreateHistoArray("h_1tightPhotonPtOverMET_control3","#gamma_{tight} p_{T} / #slash{E}_{T}", 43, scalebinningPtOverMET );	 
 	 CreateHistoArray("h_METoverSqHT_control3","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",30,scalebinning30);	 
-	 CreateHistoArray("h_met_control3","#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_control3","1st loose #gamma pt [GeV]", 50, 30, 1000);				
+	 CreateHistoArray("h_met_control3","#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_control3","1st loose #gamma pt (GeV)", 50, 30, 1000);				
 	 CreateHisto("h_n_loose_photons_control4", " # of loose photons",10, -0.5, 9.5);
-	 CreateHistoArray("h_HT_array_control4","H_{T} of all jets [GeV]", 38, HTbinning);
+	 CreateHistoArray("h_HT_array_control4","H_{T} of all jets (GeV)", 38, HTbinning);
 	 CreateHistoArray("h_1tightPhotonPtOverMET_control4","#gamma_{tight} p_{T} / #slash{E}_{T}", 43, scalebinningPtOverMET );	 
 	 CreateHistoArray("h_METoverSqHT_control4","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",30,scalebinning30);	 
-	 CreateHistoArray("h_met_control4","#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_control4","1st loose #gamma pt [GeV]", 50, 30, 1000);		
+	 CreateHistoArray("h_met_control4","#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_control4","1st loose #gamma pt (GeV)", 50, 30, 1000);		
 	 
 	 //cross checks on pt dependence
-	 CreateHisto("h_pt_dep_1","1st tight #gamma pt [GeV]", 100, 30, 1000); 
-	 CreateHisto("h_pt_dep_2","1st tight #gamma pt [GeV]", 100, 30, 1000); 
-	 CreateHisto("h_pt_dep_3","1st tight #gamma pt [GeV]", 100, 30, 1000); 
-	 CreateHisto("h_pt_dep_4","1st tight #gamma pt [GeV]", 100, 30, 1000); 
+	 CreateHisto("h_pt_dep_1","1st tight #gamma pt (GeV)", 100, 30, 1000); 
+	 CreateHisto("h_pt_dep_2","1st tight #gamma pt (GeV)", 100, 30, 1000); 
+	 CreateHisto("h_pt_dep_3","1st tight #gamma pt (GeV)", 100, 30, 1000); 
+	 CreateHisto("h_pt_dep_4","1st tight #gamma pt (GeV)", 100, 30, 1000); 
 	 
 	 CreateHistoArray("h_METoverSqHT_double_control_150","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);	
 	 CreateHistoArray("h_METoverSqHT_double_control_200","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);	
@@ -658,7 +687,8 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_10_50","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
 	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_10_60","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
 	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_10_70","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
-	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_10_80","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 	 
+	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_10_80","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
+	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_10_80_16","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",16,scalebinning16); 	 	 
 	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_0_50","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
 	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_0_60","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
 	 CreateHistoArray("h_METoverSqHT_double_control_3_regions_100_0_70","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
@@ -679,21 +709,21 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHistoArray("h_METoverSqHT_double_control_10_60","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);
 	 CreateHistoArray("h_METoverSqHT_double_control_10_80","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);
 		
-	 CreateHisto("h_MET_significance_metsig_sideband","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1000); 
+	 CreateHisto("h_MET_significance_metsig_sideband","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1000); 
 	 CreateHistoArray("h_METoverSqHT_double_control_100_300","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 
 	 CreateHistoArray("h_MET_significance_MT_sideband"," #slash{E}_{T} significance",14,METsign14);	
 	 CreateHisto("h_MET_significance_MT_sideband_2"," #slash{E}_{T} significance",50,0,500);
-	 CreateHisto("h_trans_mass_pt_40","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1000); 
+	 CreateHisto("h_trans_mass_pt_40","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1000); 
 	 CreateHistoArray("h_METoverSqHT_trans_mass_control","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);
-	 CreateHisto("h_photon_pt_trans_mass_control","1st tight #gamma pt [GeV]", 100, 30, 1000);
-	 CreateHisto("h_photon_pt_trans_mass_signal","1st tight #gamma pt [GeV]", 100, 30, 1000); 
+	 CreateHisto("h_photon_pt_trans_mass_control","1st tight #gamma pt (GeV)", 100, 30, 1000);
+	 CreateHisto("h_photon_pt_trans_mass_signal","1st tight #gamma pt (GeV)", 100, 30, 1000); 
 	 CreateHistoArray("h_METoverSqHT_met_sign_control","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12); 	
-	 CreateHisto("h_photon_pt_met_sign_control","1st tight #gamma pt [GeV]", 100, 30, 1000); 		  
-	 CreateHisto("h_photon_pt_met_sign_signal","1st tight #gamma pt [GeV]", 100, 30, 1000); 	
+	 CreateHisto("h_photon_pt_met_sign_control","1st tight #gamma pt (GeV)", 100, 30, 1000); 		  
+	 CreateHisto("h_photon_pt_met_sign_signal","1st tight #gamma pt (GeV)", 100, 30, 1000); 	
 
 	 //variation of control region
 	 
-	 CreateHistoArray("h_HT_array_100_41","H_{T} of all jets [GeV]", 38, HTbinning41);
+	 CreateHistoArray("h_HT_array_100_41","H_{T} of all jets (GeV)", 38, HTbinning41);
 	 CreateHistoArray("h_MET_significance_100_39"," #slash{E}_{T} significance",39,METsign39);
 	 CreateHistoArray("h_MET_significance_100_23"," #slash{E}_{T} significance",23,METsign23);	 
 	 CreateHistoArray("h_METoverSqHT_100_36","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",36,scalebinning36);	
@@ -701,8 +731,8 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHistoArray("h_METoverSqHT_100_24","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",24,scalebinning24);	 
 	 CreateHistoArray("h_METoverSqHT_100_17","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",17,scalebinning17);	 
 	 CreateHistoArray("h_METoverSqHT_100_12","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);		 
-	 CreateHistoArray("h_HT_array_80","H_{T} of all jets [GeV]", 38, HTbinning);
-	 CreateHistoArray("h_HT_array_80_41","H_{T} of all jets [GeV]", 38, HTbinning41);
+	 CreateHistoArray("h_HT_array_80","H_{T} of all jets (GeV)", 38, HTbinning);
+	 CreateHistoArray("h_HT_array_80_41","H_{T} of all jets (GeV)", 38, HTbinning41);
 	 CreateHistoArray("h_MET_significance_80_39"," #slash{E}_{T} significance",39,METsign39);
 	 CreateHistoArray("h_MET_significance_80_23"," #slash{E}_{T} significance",23,METsign23);	 	 
 	 CreateHistoArray("h_METoverSqHT_80_36","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",36,scalebinning36);
@@ -710,10 +740,10 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHistoArray("h_METoverSqHT_80_24","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",24,scalebinning24);	 
 	 CreateHistoArray("h_METoverSqHT_80_17","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",17,scalebinning17);	
 	 CreateHistoArray("h_METoverSqHT_80_12","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);	  	 
-	 CreateHistoArray("h_met_80","#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_80","1st loose #gamma pt [GeV]", 50, 30, 1000);
-	 CreateHistoArray("h_HT_array_90","H_{T} of all jets [GeV]", 38, HTbinning);
-	 CreateHistoArray("h_HT_array_90_41","H_{T} of all jets [GeV]", 38, HTbinning41);
+	 CreateHistoArray("h_met_80","#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_80","1st loose #gamma pt (GeV)", 50, 30, 1000);
+	 CreateHistoArray("h_HT_array_90","H_{T} of all jets (GeV)", 38, HTbinning);
+	 CreateHistoArray("h_HT_array_90_41","H_{T} of all jets (GeV)", 38, HTbinning41);
 	 CreateHistoArray("h_MET_significance_90_39"," #slash{E}_{T} significance",39,METsign39);
 	 CreateHistoArray("h_MET_significance_90_23"," #slash{E}_{T} significance",23,METsign23);	 
 	 CreateHistoArray("h_METoverSqHT_90_36","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",36,scalebinning36);	
@@ -721,10 +751,10 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHistoArray("h_METoverSqHT_90_24","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",24,scalebinning24);	 
 	 CreateHistoArray("h_METoverSqHT_90_17","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",17,scalebinning17);
 	 CreateHistoArray("h_METoverSqHT_90_12","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);	 	  
-	 CreateHistoArray("h_met_90","#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_90","1st loose #gamma pt [GeV]", 50, 30, 1000);	 	 
-	 CreateHistoArray("h_HT_array_110","H_{T} of all jets [GeV]", 38, HTbinning);
-	 CreateHistoArray("h_HT_array_110_41","H_{T} of all jets [GeV]", 38, HTbinning41);
+	 CreateHistoArray("h_met_90","#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_90","1st loose #gamma pt (GeV)", 50, 30, 1000);	 	 
+	 CreateHistoArray("h_HT_array_110","H_{T} of all jets (GeV)", 38, HTbinning);
+	 CreateHistoArray("h_HT_array_110_41","H_{T} of all jets (GeV)", 38, HTbinning41);
 	 CreateHistoArray("h_MET_significance_110_39"," #slash{E}_{T} significance",39,METsign39);
 	 CreateHistoArray("h_MET_significance_110_23"," #slash{E}_{T} significance",23,METsign23);	 
 	 CreateHistoArray("h_METoverSqHT_110_36","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",36,scalebinning36);	
@@ -732,10 +762,10 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHistoArray("h_METoverSqHT_110_24","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",24,scalebinning24);	 
 	 CreateHistoArray("h_METoverSqHT_110_17","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",17,scalebinning17);	
 	 CreateHistoArray("h_METoverSqHT_110_12","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);	   
-	 CreateHistoArray("h_met_110","#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_110","1st loose #gamma pt [GeV]", 50, 30, 1000);	 	
-	 CreateHistoArray("h_HT_array_120","H_{T} of all jets [GeV]", 38, HTbinning);
-	 CreateHistoArray("h_HT_array_120_41","H_{T} of all jets [GeV]", 38, HTbinning41);
+	 CreateHistoArray("h_met_110","#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_110","1st loose #gamma pt (GeV)", 50, 30, 1000);	 	
+	 CreateHistoArray("h_HT_array_120","H_{T} of all jets (GeV)", 38, HTbinning);
+	 CreateHistoArray("h_HT_array_120_41","H_{T} of all jets (GeV)", 38, HTbinning41);
 	 CreateHistoArray("h_MET_significance_120_39"," #slash{E}_{T} significance",39,METsign39);
 	 CreateHistoArray("h_MET_significance_120_23"," #slash{E}_{T} significance",23,METsign23);	 
 	 CreateHistoArray("h_METoverSqHT_120_36","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",36,scalebinning36);	
@@ -743,36 +773,36 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHistoArray("h_METoverSqHT_120_24","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",24,scalebinning24);	 
 	 CreateHistoArray("h_METoverSqHT_120_17","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",17,scalebinning17);	
 	 CreateHistoArray("h_METoverSqHT_120_12","#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}] ",12,scalebinning12);	   
-	 CreateHistoArray("h_met_120","#slash{E}_{T} [GeV]", 29, metScalebinning);
-	 CreateHisto("h_pt_120","1st loose #gamma pt [GeV]", 50, 30, 1000);
+	 CreateHistoArray("h_met_120","#slash{E}_{T} (GeV)", 29, metScalebinning);
+	 CreateHisto("h_pt_120","1st loose #gamma pt (GeV)", 50, 30, 1000);
 	 CreateHisto("h_MET_over_PT_100", "#slash{E}_{T} / 1st #gamma_{tight} p_{T}", 75, 0, 15);
 	 CreateHisto("h_Angle_MET_1jet_100","Angle between 1st Jet and MET", 64, 0, 3.2);			
-	 CreateHistoArray("h_InvMass_2jets_100", "Invariant mass of the two leading jets [GeV]",27,InvMassBin27);		
+	 CreateHistoArray("h_InvMass_2jets_100", "Invariant mass of the two leading jets (GeV)",27,InvMassBin27);		
 	 CreateHisto("h_MET_over_PT_80", "#slash{E}_{T} / 1st #gamma_{tight} p_{T}", 75, 0, 15);
 	 CreateHisto("h_Angle_MET_1jet_80","Angle between 1st Jet and MET", 64, 0, 3.2);			
-	 CreateHistoArray("h_InvMass_2jets_80", "Invariant mass of the two leading jets [GeV]",27,InvMassBin27);			
+	 CreateHistoArray("h_InvMass_2jets_80", "Invariant mass of the two leading jets (GeV)",27,InvMassBin27);			
 	 CreateHisto("h_MET_over_PT_90", "#slash{E}_{T} / 1st #gamma_{tight} p_{T}", 75, 0, 15);
 	 CreateHisto("h_Angle_MET_1jet_90","Angle between 1st Jet and MET", 64, 0, 3.2);			
-	 CreateHistoArray("h_InvMass_2jets_90", "Invariant mass of the two leading jets [GeV]",27,InvMassBin27);		
+	 CreateHistoArray("h_InvMass_2jets_90", "Invariant mass of the two leading jets (GeV)",27,InvMassBin27);		
 	 CreateHisto("h_MET_over_PT_110", "#slash{E}_{T} / 1st #gamma_{tight} p_{T}", 75, 0, 15);
 	 CreateHisto("h_Angle_MET_1jet_110","Angle between 1st Jet and MET", 64, 0, 3.2);			
-	 CreateHistoArray("h_InvMass_2jets_110", "Invariant mass of the two leading jets [GeV]",27,InvMassBin27);			
+	 CreateHistoArray("h_InvMass_2jets_110", "Invariant mass of the two leading jets (GeV)",27,InvMassBin27);			
 	 CreateHisto("h_MET_over_PT_120", "#slash{E}_{T} / 1st #gamma_{tight} p_{T}", 75, 0, 15);
 	 CreateHisto("h_Angle_MET_1jet_120","Angle between 1st Jet and MET", 64, 0, 3.2);			
-	 CreateHistoArray("h_InvMass_2jets_120", "Invariant mass of the two leading jets [GeV]",27,InvMassBin27);			
+	 CreateHistoArray("h_InvMass_2jets_120", "Invariant mass of the two leading jets (GeV)",27,InvMassBin27);			
 			
 				 									 
-	 CreateHistoArray("h_HT_array", "H_{T} of all jets [GeV]", 38, HTbinning);
-	 CreateHistoArray("h_HT_array_HT_cut", "H_{T} of all jets [GeV]", 38, HTbinning);	 
-	 CreateHistoArray("h_HT_array_pt_cut", "H_{T} of all jets [GeV]", 38, HTbinning);	 	
-	 CreateHistoArray("h_HT_array_datadriven", "H_{T} of all jets [GeV]", 38, HTbinning);	
-	 CreateHisto("h_pt_raw","1st tight photon pt [GeV]",50,0.,1000);	  		 
-	 CreateHisto("h_HT_raw","H_{T} of all jets [GeV]",100,0.,1000);	
-	 CreateHisto("h_HT","H_{T} of all jets [GeV]",44,0.,2200);	
-	 CreateHisto("h_HT2","H_{T} of all jets [GeV]",44,0.,2200);	 
-	 CreateHisto("h_HT_sig","H_{T} of all jets [GeV]",44,0.,2200);
-	 CreateHisto("h_HT_GJets","H_{T} of all jets [GeV]",44,0.,2200);	 	  
-	 CreateHisto("h_HT_metcut","H_{T} of all loose jets with MET > 50 GeV [GeV]",60,0.,1500);
+	 CreateHistoArray("h_HT_array", "H_{T} of all jets (GeV)", 38, HTbinning);
+	 CreateHistoArray("h_HT_array_HT_cut", "H_{T} of all jets (GeV)", 38, HTbinning);	 
+	 CreateHistoArray("h_HT_array_pt_cut", "H_{T} of all jets (GeV)", 38, HTbinning);	 	
+	 CreateHistoArray("h_HT_array_datadriven", "H_{T} of all jets (GeV)", 38, HTbinning);	
+	 CreateHisto("h_pt_raw","1st tight photon pt (GeV)",50,0.,1000);	  		 
+	 CreateHisto("h_HT_raw","H_{T} of all jets (GeV)",100,0.,1000);	
+	 CreateHisto("h_HT","H_{T} of all jets (GeV)",44,0.,2200);	
+	 CreateHisto("h_HT2","H_{T} of all jets (GeV)",44,0.,2200);	 
+	 CreateHisto("h_HT_sig","H_{T} of all jets (GeV)",44,0.,2200);
+	 CreateHisto("h_HT_GJets","H_{T} of all jets (GeV)",44,0.,2200);	 	  
+	 CreateHisto("h_HT_metcut","H_{T} of all loose jets with MET > 50 GeV (GeV)",60,0.,1500);
 	 	 
 	 CreateHisto("h_reco_vert_n_vor", "# of vertices", 40, -0.5, 39.5); 
 	 CreateHisto("h_reco_vert_n_nach", "# of vertices", 40, -0.5, 39.5);	 	 
@@ -781,11 +811,11 @@ void MySelector::SlaveBegin(TTree * tree)
 	 	 	 
 	 CreateHisto("h_loose_jets_pt", "Pt of loose jets", 60, 0, 1200);	
 	 CreateHisto("h_cleaned_jets_pt", "Pt of cleaned jets", 60, 0, 1200);	  
-	 CreateHisto("h_loose_photons_pt", "all #gamma_{loose} p_{T} [GeV]", 50, 0, 1000);	
+	 CreateHisto("h_loose_photons_pt", "all #gamma_{loose} p_{T} (GeV)", 50, 0, 1000);	
 	 CreateHisto("h_loose_photon_e5x5", "e5x5 of loose photons", 32, 0, 400);
-	 CreateHisto("h_loose_1photons_pt", "1st #gamma_{loose} p_{T} [GeV]", 50, 0, 1000);
-	 CreateHisto("h_tight_1photons_pt", "1st #gamma_{tight} p_{T} [GeV]", 200, 0, 1000);	 
-	 CreateHisto("h_loose_1photons_pt_cut", "1st #gamma_{loose} p_{T} [GeV]", 32, 0, 400);		 
+	 CreateHisto("h_loose_1photons_pt", "1st #gamma_{loose} p_{T} (GeV)", 50, 0, 1000);
+	 CreateHisto("h_tight_1photons_pt", "1st #gamma_{tight} p_{T} (GeV)", 200, 0, 1000);	 
+	 CreateHisto("h_loose_1photons_pt_cut", "1st #gamma_{loose} p_{T} (GeV)", 32, 0, 400);		 
 	 	 
 	 CreateHisto("h_photon_eta", "#eta of photons", 40, -4, 4);	 
 	 CreateHisto("h_loose_photon_eta_vor", "#eta of loose photons", 40, -4, 4);	 
@@ -839,8 +869,9 @@ void MySelector::SlaveBegin(TTree * tree)
 	  	 
 			 
 	 CreateHisto("h_MET_significance"," #slash{E}_{T} significance",60,0,600);	
+	 CreateHisto("h_MET_significance_corrected"," #slash{E}_{T} significance",60,0,600);
 	 CreateHistoArray("h_MET_significance_array"," #slash{E}_{T} significance",10,METsign10);
-	 CreateHistoArray("h_MET_significance_array_norm"," #slash{E}_{T} significance",10,METsign10);
+	 CreateHistoArray("h_MET_significance_array_norm"," #slash{E}_{T} significance",10,METsign10);	 
 	 CreateHistoArray("h_MET_significance_per_gev_10"," #slash{E}_{T} significance",10,METsign10);
 	 CreateHistoArray("h_MET_significance_per_gev_14"," #slash{E}_{T} significance",14,METsign14);	 	 
 	 CreateHistoArray("h_MET_significance_per_gev_23"," #slash{E}_{T} significance",23,METsign23);	 
@@ -881,9 +912,9 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_InvMassJetsEta","InvMassJetsEta",40,0,800); 
 	 CreateHisto("h_InvMassJetsRel","InvMassJets",40,0,800);
 	 CreateHisto("h_InvMassJetsEtaRel","InvMassJetsEta",40,0,800);
-	 CreateHisto("h_trans_mass_MET_Gamma","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1000);
-	 CreateHisto("h_trans_mass_MET_Gamma_blind","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1000);	 
-	 CreateHisto("h_trans_mass_MET_Gamma_100","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1000);	 
+	 CreateHisto("h_trans_mass_MET_Gamma","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1000);
+	 CreateHisto("h_trans_mass_MET_Gamma_blind","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1000);	 
+	 CreateHisto("h_trans_mass_MET_Gamma_100","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1000);	 
 	 
 	 
 	 CreateHisto("h_METoverSqHT_low"," #slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}]",50,0,100);
@@ -892,15 +923,14 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_InvMassJetsEta_low","InvMassJetsEta",40,0,800); 
 	 CreateHisto("h_InvMassJetsRel_low","InvMassJets",40,0,800);
 	 CreateHisto("h_InvMassJetsEtaRel_low","InvMassJetsEta",40,0,800);
-	 CreateHisto("h_n_cleaned_jets_low","Number of Jets",10,-0.5,9.5);	
-	 CreateHisto("h_trans_mass_MET_Gamma_low","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1100);
+	 CreateHisto("h_trans_mass_MET_Gamma_low","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1100);
 	 CreateHisto("h_n_loose_photons_low","Number of #gamma_{loose}",10,-0.5,9.5);
-	 CreateHisto("h_inverse_met_low","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_inverse_met_low","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_tight_photon_pt_over_HT_low","1st #gamma_{tight} p_{T} / H_{T}", 50, 0, 2);
-	 CreateHisto("h_cleaned_jets_pt_low","1st Jet p_{T} [GeV]", 60, 0, 1000);
-	 CreateHisto("h_trans_mass_MET_Gamma_low_sig","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1100);
-	 CreateHisto("h_cleaned_jets_pt_low_sig","1st Jet p_{T} [GeV]", 60, 0, 1000);	 
-	 CreateHisto("h_inverse_met_low_sig", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_cleaned_jets_pt_low","1st Jet p_{T} (GeV)", 60, 0, 1000);
+	 CreateHisto("h_trans_mass_MET_Gamma_low_sig","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1100);
+	 CreateHisto("h_cleaned_jets_pt_low_sig","1st Jet p_{T} (GeV)", 60, 0, 1000);	 
+	 CreateHisto("h_inverse_met_low_sig", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_n_loose_photons_low_sig","Number of #gamma_{loose}",10,-0.5,9.5);	
 		 
 	 CreateHisto("h_Etrans_rel","Relative transversal energy",40,0,800);
@@ -917,51 +947,51 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_InvMassJetsRel_high","InvMassJets",40,0,800);
 	 CreateHisto("h_InvMassJetsEtaRel_high","InvMassJetsEta",40,0,800);	 
 	 CreateHisto("h_n_cleaned_jets_high","Number of Jets",10,-0.5,9.5);	
-	 CreateHisto("h_trans_mass_MET_Gamma_high","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1100);
+	 CreateHisto("h_trans_mass_MET_Gamma_high","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1100);
 	 CreateHisto("h_n_loose_photons_high","Number of #gamma_{loose}",10,-0.5,9.5);
-	 CreateHisto("h_inverse_met_high","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_inverse_met_high","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_tight_photon_pt_over_HT_high","#gamma_{tight} p_{T}/H_{T}", 50, 0, 2);
-	 CreateHisto("h_cleaned_jets_pt_high","1st Jet p_{T} [GeV]", 60, 0, 1200);
-	 CreateHisto("h_trans_mass_MET_Gamma_high_sig","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1300);
-	 CreateHisto("h_cleaned_jets_pt_high_sig","1st Jet p_{T} [GeV]", 60, 0, 1200);	 
-	 CreateHisto("h_inverse_met_high_sig", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_cleaned_jets_pt_high","1st Jet p_{T} (GeV)", 60, 0, 1200);
+	 CreateHisto("h_trans_mass_MET_Gamma_high_sig","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1300);
+	 CreateHisto("h_cleaned_jets_pt_high_sig","1st Jet p_{T} (GeV)", 60, 0, 1200);	 
+	 CreateHisto("h_inverse_met_high_sig", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_n_loose_photons_high_sig","Number of #gamma_{loose}",10,-0.5,9.5);	
-	 CreateHisto("h_trans_mass_MET_Gamma_high_ratio","M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1300);
-	 CreateHisto("h_cleaned_jets_pt_high_ratio","1st Jet p_{T} [GeV]", 60, 0, 1200);	 
-	 CreateHisto("h_inverse_met_high_ratio", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_trans_mass_MET_Gamma_high_ratio","M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1300);
+	 CreateHisto("h_cleaned_jets_pt_high_ratio","1st Jet p_{T} (GeV)", 60, 0, 1200);	 
+	 CreateHisto("h_inverse_met_high_ratio", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_n_loose_photons_high_ratio","Number of #gamma_{loose}",10,-0.5,9.5);	  
 	 
-	 CreateHisto("h_selection_low"," #slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);	 
-	 CreateHisto("h_selection_high"," #slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);	 
-	 CreateHisto("h_selection_high2","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_selection_low"," #slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);	 
+	 CreateHisto("h_selection_high"," #slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);	 
+	 CreateHisto("h_selection_high2","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_selection_high2_met_sign"," #slash{E}_{T} significance",60,0,600);	 	 	 
 	
 	// N-1 Plots
-	 CreateHisto("h_N-1_mt_low", "M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1300);
-	 CreateHisto("h_N-1_sum_pt_low", "#sum_{i} #gamma_{i}p_{T} + H_{T} [GeV]",60,0,2000);
+	 CreateHisto("h_N-1_mt_low", "M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1300);
+	 CreateHisto("h_N-1_sum_pt_low", "#sum_{i} #gamma_{i}p_{T} + H_{T} (GeV)",60,0,2000);
 	 CreateHisto("h_N-1_sum_signal_low", "#sum_{i} #gamma_{i}p_{T} + #slash{E}_{T}",60,0,2000);	 
-	 CreateHisto("h_N-1_jet_pt_low", "1st Jet p_{T} [GeV]", 60, 0, 1000);
-	 CreateHisto("h_inverse_met_selection_low", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_N-1_jet_pt_low", "1st Jet p_{T} (GeV)", 60, 0, 1000);
+	 CreateHisto("h_inverse_met_selection_low", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	   
 	 CreateHisto("h_N-1_METsig_high", "#slash{E}_{T} / #sqrt{H_{T}} [#sqrt{GeV}]",50,0,80);
-	 CreateHisto("h_N-1_mt_high", "M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1300);
-	 CreateHisto("h_N-1_sum_pt_high", "#sum_{i} #gamma_{i}p_{T} + H_{T} [GeV]",60,0,3000);
-	 CreateHisto("h_N-1_sum_signal_high", "#sum_{i} #gamma_{i}p_{T} + #slash{E}_{T} [GeV]",60,0,3000);
+	 CreateHisto("h_N-1_mt_high", "M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1300);
+	 CreateHisto("h_N-1_sum_pt_high", "#sum_{i} #gamma_{i}p_{T} + H_{T} (GeV)",60,0,3000);
+	 CreateHisto("h_N-1_sum_signal_high", "#sum_{i} #gamma_{i}p_{T} + #slash{E}_{T} (GeV)",60,0,3000);
 	 CreateHisto("h_N-1_sum_ptOverHt_high", "#sum_{i} #gamma_{i}p_{T} / #sqrt{H_{T}} [#sqrt{GeV}]",50,0,100);	 	 
 	 CreateHisto("h_N-1_n_jets_high", "Number of Jets",10,-0.5,9.5);
-	 CreateHisto("h_inverse_met_selection_high", "#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_inverse_met_selection_high", "#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 
 	 CreateHisto("h_n_pixel_selection_low","Number of #gamma_{Pixel}",5,-0.5,4.5);
 	 CreateHisto("h_n_photons_selection_low","Number of #gamma_{loose}",5,-0.5,4.5);	 
 	 CreateHisto("h_n_jets_selection_low","Number of Jets",10,-0.5,9.5);	 
-	 CreateHisto("h_inverse_met_selection_pixel_low","#slash{E}_{T}^{-1} [GeV^{-1}] ",50, 0, 0.02);
-	 CreateHisto("h_inverse_met_selection_2gamma_low","#slash{E}_{T}^{-1} [GeV^{-1}] ",50, 0, 0.02);	 	 
+	 CreateHisto("h_inverse_met_selection_pixel_low","#slash{E}_{T}^{-1} (GeV^{-1}) ",50, 0, 0.02);
+	 CreateHisto("h_inverse_met_selection_2gamma_low","#slash{E}_{T}^{-1} (GeV^{-1}) ",50, 0, 0.02);	 	 
 	 CreateHisto("h_n_pixel_selection_high","Number of #gamma_{Pixel}",5,-0.5,4.5);
 	 CreateHisto("h_n_photons_selection_high","Number of #gamma_{Pixel}",5,-0.5,4.5);	 
-	 CreateHisto("h_inverse_met_selection_pixel_high","#slash{E}_{T}^{-1} [GeV^{-1}] ",50, 0, 0.02);
-	 CreateHisto("h_inverse_met_selection_jets_high"," #slash{E}_{T}^{-1} [GeV^{-1}]",50, 0, 0.02);
-	 CreateHisto("h_inverse_met_selection_2gamma_high","#slash{E}_{T}^{-1} [GeV^{-1}]",50, 0, 0.02);	 	 
- 	 CreateHisto("h_number_selection_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]",50, 0, 0.02);
+	 CreateHisto("h_inverse_met_selection_pixel_high","#slash{E}_{T}^{-1} (GeV^{-1}) ",50, 0, 0.02);
+	 CreateHisto("h_inverse_met_selection_jets_high"," #slash{E}_{T}^{-1} (GeV^{-1})",50, 0, 0.02);
+	 CreateHisto("h_inverse_met_selection_2gamma_high","#slash{E}_{T}^{-1} (GeV^{-1})",50, 0, 0.02);	 	 
+ 	 CreateHisto("h_number_selection_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})",50, 0, 0.02);
 	 
 	 // Check dependency of n Vertex  -> difference in trigger efficiency
 	 
@@ -983,71 +1013,79 @@ void MySelector::SlaveBegin(TTree * tree)
 		// Photon properties
 		
 		
-		CreateHisto("h_photon_charged_iso_40","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_40","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_40","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);
+		CreateHisto("h_photon_charged_iso_40","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_40","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_40","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);
 		
-		CreateHisto("h_photon_charged_iso_60","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_60","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_60","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);	
+		CreateHisto("h_photon_charged_iso_60","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_60","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_60","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);	
 		
-		CreateHisto("h_photon_charged_iso_80","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_80","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_80","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);
+		CreateHisto("h_photon_charged_iso_80","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_80","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_80","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);
 		
-		CreateHisto("h_photon_charged_iso_100","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_100","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_100","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);			
+		CreateHisto("h_photon_charged_iso_100","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_100","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_100","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);			
 				
-		CreateHisto("h_photon_charged_iso_150","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_150","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_150","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);
+		CreateHisto("h_photon_charged_iso_150","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_150","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_150","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);
 		
-		CreateHisto("h_photon_charged_iso_200","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_200","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_200","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);	
+		CreateHisto("h_photon_charged_iso_200","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_200","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_200","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);	
 						
-		CreateHisto("h_photon_charged_iso_400","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_400","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_400","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);
+		CreateHisto("h_photon_charged_iso_400","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_400","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_400","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);
 		
-		CreateHisto("h_photon_charged_iso_inf","#gamma_{tight} charged hadron isolation [GeV]", 50, 0, 0.7);		 
-		CreateHisto("h_photon_neutral_iso_inf","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} [GeV]", 50, 0, 0.4);
-		CreateHisto("h_photon_photon_iso_inf","#gamma_{tight} photon isolation - 0.005*p_{T} [GeV]", 50, 0, 0.5);					
+		CreateHisto("h_photon_charged_iso_inf","#gamma_{tight} charged hadron isolation (GeV)", 50, 0, 0.7);		 
+		CreateHisto("h_photon_neutral_iso_inf","#gamma_{tight} neutral hadron isolation - 0.04*p_{T} (GeV)", 50, 0, 0.4);
+		CreateHisto("h_photon_photon_iso_inf","#gamma_{tight} photon isolation - 0.005*p_{T} (GeV)", 50, 0, 0.5);					
 		// Control and Signal Region
 		
-	 	CreateHisto("h_tight_photon_pt_before","1st #gamma_{tight} p_{T} [GeV]", 100, 0, 1000);	
-		CreateHistoArray("h_tight_photon_pt_before_per_gev","1st #gamma_{tight} p_{T} [GeV]",36,PTbefore36);		
+	 	CreateHisto("h_tight_photon_pt_before","1st #gamma_{tight} p_{T} (GeV)", 100, 0, 1000);	
+		CreateHistoArray("h_tight_photon_pt_before_per_gev","1st #gamma_{tight} p_{T} (GeV)",36,PTbefore36);		
 	  CreateHistoArray("h_MET_significance_array_norm_before"," #slash{E}_{T} significance",10,METsign10); 		
 	  CreateHistoArray("h_MET_significance_per_gev_14_before"," #slash{E}_{T} significance",14,METsign14);	
-		CreateHisto("h_trans_mass_pt_before", "M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1000);	
-		CreateHistoArray("h_trans_mass_pt_before_per_gev", "M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",34,PTbefore2);		
+		CreateHisto("h_trans_mass_pt_before", "M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1000);	
+		CreateHistoArray("h_trans_mass_pt_before_per_gev", "M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",34,PTbefore2);		
 		CreateHisto("h_met_significance_before", " #slash{E}_{T} significance",60,0,600);	
 	  CreateHisto("h_sum_signal_over_sqrt_met_before","#sum [#sqrt{GeV}]",40,10,90);
 	  CreateHisto("h_n_photon_loose_before","Number of #gamma_{loose}",10,-0.5,9.5);	
 	  CreateHisto("h_n_photon_tight_before","Number of #gamma_{tight}",10,-0.5,9.5);			
 	  CreateHisto("h_n_jets_cleaned_before","Number of jets",10,-0.5,9.5);
-		CreateHisto("h_jet_pt_before","1st jet p_{T} [GeV]", 100, 0, 1000);
-	  CreateHisto("h_HT_before","H_{T} [GeV]",50,0,2000);
-	  CreateHistoArray("h_HT_before_per_gev","H_{T} [GeV]",29,HTbinning29);		
-		CreateHisto("h_met_before","#slash{E}_{T} [GeV]", 50, 50, 600); 		
-		
-
-	 	CreateHisto("h_tight_photon_pt_CR","1st #gamma_{tight} p_{T} [GeV]", 100, 0, 1000);	 
-	  CreateHistoArray("h_MET_significance_array_norm_CR"," #slash{E}_{T} significance",10,METsign10);		
+		CreateHisto("h_jet_pt_before","1st jet p_{T} (GeV)", 100, 0, 1000);
+	  CreateHisto("h_HT_before","H_{T} (GeV)",50,0,2000);	  
+		CreateHisto("h_hlt_HT_before","H_{T} (GeV)",50,0,2000);	 
+	  CreateHistoArray("h_HT_before_per_gev","H_{T} (GeV)",29,HTbinning29);		
+		CreateHisto("h_met_before","#slash{E}_{T} (GeV)", 50, 50, 600); 		
+		CreateHisto("h_TypeOneMet_before","Type 1 corrected #slash{E}_{T} (GeV)", 50, 50, 600); 		
+	  CreateHisto("h_ST_TypeOne_before","corrected S_{T}^{#gamma} (GeV)",50,0,2000);	
+	  CreateHisto("h_ST_before","S_{T}^{#gamma} (GeV)",50,0,2000);	 
+	 	 
+	 	CreateHisto("h_tight_photon_pt_CR","1st #gamma_{tight} p_{T} (GeV)", 100, 0, 1000);	 
+	  CreateHistoArray("h_MET_significance_array_norm_CR"," #slash{E}_{T} significance",10,METsign10);
+	  CreateHistoArray("h_MET_significance_array_CR"," #slash{E}_{T} significance",10,METsign10);
+	  CreateHistoArray("h_MET_significance_array_CR_13"," #slash{E}_{T} significance",10,METsign13);						
 	  CreateHistoArray("h_MET_significance_per_gev_14_CR"," #slash{E}_{T} significance",14,METsign14);
-		CreateHisto("h_trans_mass_pt_CR", "M_{T}(#slash{E}_{T}, 1st #gamma) [GeV]",50,0,1000);	
+		CreateHisto("h_trans_mass_pt_CR", "M_{T}(#slash{E}_{T}, 1st #gamma) (GeV)",50,0,1000);	
 		CreateHisto("h_met_significance_CR"," #slash{E}_{T} significance",60,0,600);		
 	  CreateHisto("h_sum_signal_over_sqrt_met_CR","#sum [#sqrt{GeV}]",40,10,90);
 	  CreateHisto("h_n_photon_loose_CR","Number of #gamma_{loose}",10,-0.5,9.5);	
 	  CreateHisto("h_n_photon_tight_CR","Number of #gamma_{tight}",10,-0.5,9.5);			
 	  CreateHisto("h_n_jets_cleaned_CR","Number of jets",10,-0.5,9.5);
-		CreateHisto("h_jet_pt_CR","1st jet p_{T} [GeV]", 100, 0, 1000);
-	  CreateHisto("h_HT_CR","H_{T} [GeV]",50,0,2000);
-		CreateHisto("h_met_CR","#slash{E}_{T} [GeV]", 50, 50, 600);
-		CreateHistoArray("h_InvMass_2jets_CR", "Invariant mass of the two leading jets [GeV]",27,InvMassBin27);		
+		CreateHisto("h_jet_pt_CR","1st jet p_{T} (GeV)", 100, 0, 1000);
+	  CreateHisto("h_HT_CR","H_{T} (GeV)",50,0,2000);
+		CreateHisto("h_met_CR","#slash{E}_{T} (GeV)", 50, 50, 600);
+		CreateHisto("h_TypeOneMet_CR","Type 1 corrected #slash{E}_{T} (GeV)", 50, 50, 600); 		
+		CreateHistoArray("h_InvMass_2jets_CR", "Invariant mass of the two leading jets (GeV)",27,InvMassBin27);		
 		CreateHisto("h_Angle_MJ1_CR","Angle between 1st Jet and #slash{E}_{T}", 64, 0, 3.2);	
-
+	  CreateHisto("h_ST_TypeOne_CR","corrected S_{T}^{#gamma} (GeV)",50,0,2000);	
+	  CreateHisto("h_ST_CR","S_{T}^{#gamma} (GeV)",50,0,2000);		
+		
 		//FINAL
 		
 		CreateHisto("h_final_n_loose_photons_blind"," # of loose photons",10, -0.5, 9.5);
@@ -1057,31 +1095,52 @@ void MySelector::SlaveBegin(TTree * tree)
 
 		// 	Signal region bins  //
 
-	CreateHisto("h_upper_right_SR_HT","H_{T} [GeV]",50,0,2000); 
+	CreateHisto("h_upper_right_SR_HT","H_{T} (GeV)",50,0,2000); 
 	CreateHisto("h_upper_right_SR_n","Number of #gamma_{loose}",10,-0.5,9.5);	
-	CreateHisto("h_upper_right_SR","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);
+	CreateHisto("h_upper_right_SR","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);
 	
-	CreateHisto("h_upper_left_SR_HT","H_{T} [GeV]",50,0,2000); 
+	CreateHisto("h_upper_left_SR_HT","H_{T} (GeV)",50,0,2000); 
 	CreateHisto("h_upper_left_SR_n","Number of #gamma_{loose}",10,-0.5,9.5);	
-	CreateHisto("h_upper_left_SR","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);
+	CreateHisto("h_upper_left_SR","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);
 			
-	CreateHisto("h_lower_left_SR_HT","H_{T} [GeV]",50,0,2000); 
+	CreateHisto("h_lower_left_SR_HT","H_{T} (GeV)",50,0,2000); 
 	CreateHisto("h_lower_left_SR_n","Number of #gamma_{loose}",10,-0.5,9.5);	
-	CreateHisto("h_lower_left_SR","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);
+	CreateHisto("h_lower_left_SR","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);
 		
-	CreateHisto("h_lower_right_SR_HT","H_{T} [GeV]",50,0,2000); 
+	CreateHisto("h_lower_right_SR_HT","H_{T} (GeV)",50,0,2000); 
 	CreateHisto("h_lower_right_SR_n","Number of #gamma_{loose}",10,-0.5,9.5);	
-	CreateHisto("h_lower_right_SR","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);			
+	CreateHisto("h_lower_right_SR","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);			
 
-	CreateHisto("h_upper_right_SR_sum_signal","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);		
-	CreateHisto("h_upper_left_SR_sum_signal","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);	
-	CreateHisto("h_lower_left_SR_sum_signal","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);
-	CreateHisto("h_lower_right_SR_sum_signal","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);		
+	CreateHisto("h_upper_right_SR_sum_signal","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);		
+	CreateHisto("h_upper_left_SR_sum_signal","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);	
+	CreateHisto("h_lower_left_SR_sum_signal","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);
+	CreateHisto("h_lower_right_SR_sum_signal","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);		
 	
-	CreateHisto("h_upper_right_SR_MT","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);		
-	CreateHisto("h_upper_left_SR_MT","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);	
-	CreateHisto("h_lower_left_SR_MT","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);
-	CreateHisto("h_lower_right_SR_MT","1st #gamma_{tight} p_{T} [GeV]" ,1,0,5000);		
+	CreateHisto("h_upper_right_SR_ht","H_{T} (GeV)",50,0,2000);		
+	CreateHisto("h_upper_left_SR_ht","H_{T} (GeV)",50,0,2000);	
+	CreateHisto("h_lower_left_SR_ht","H_{T} (GeV)",50,0,2000);
+	CreateHisto("h_lower_right_SR_ht","H_{T} (GeV)",50,0,2000);	
+	
+	CreateHisto("h_upper_right_SR_ht_trigger","H_{T} (GeV)",50,0,2000);		
+	CreateHisto("h_upper_left_SR_ht_trigger","H_{T} (GeV)",50,0,2000);	
+	CreateHisto("h_lower_left_SR_ht_trigger","H_{T} (GeV)",50,0,2000);
+	CreateHisto("h_lower_right_SR_ht_trigger","H_{T} (GeV)",50,0,2000);	
+	
+	CreateHisto("h_upper_right_SR_ht_trigger_had","H_{T} (GeV)",50,0,2000);		
+	CreateHisto("h_upper_left_SR_ht_trigger_had","H_{T} (GeV)",50,0,2000);	
+	CreateHisto("h_lower_left_SR_ht_trigger_had","H_{T} (GeV)",50,0,2000);
+	CreateHisto("h_lower_right_SR_ht_trigger_had","H_{T} (GeV)",50,0,2000);	
+	
+	CreateHisto("h_upper_right_SR_ht_trigger_had_2","H_{T} (GeV)",50,0,2000);		
+	CreateHisto("h_upper_left_SR_ht_trigger_had_2","H_{T} (GeV)",50,0,2000);	
+	CreateHisto("h_lower_left_SR_ht_trigger_had_2","H_{T} (GeV)",50,0,2000);
+	CreateHisto("h_lower_right_SR_ht_trigger_had_2","H_{T} (GeV)",50,0,2000);		
+			
+	
+	CreateHisto("h_upper_right_SR_MT","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);		
+	CreateHisto("h_upper_left_SR_MT","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);	
+	CreateHisto("h_lower_left_SR_MT","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);
+	CreateHisto("h_lower_right_SR_MT","1st #gamma_{tight} p_{T} (GeV)" ,1,0,5000);		
 	 /*************** Selection analysis *****************/
 	 
 	 
@@ -1092,28 +1151,28 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_stage1_met_over_pt", "#slash{E}_{T} / 1st #gamma_{tight} p_{T}", 50, 0, 10);
 	 CreateHisto("h_stage1_pt_over_HT","1st #gamma_{tight} p_{T} / H_{T}", 60, 0, 3);
 	 CreateHisto("h_stage1_angle_met_1jet","Angle between 1st Jet and MET", 42, 0, 4.2);
-	 CreateHisto("h_stage1_sum_signal", "#sum_{i} #gamma_{i}p_{T} + #slash{E}_{T} [GeV]",50,0,2000);
+	 CreateHisto("h_stage1_sum_signal", "#sum_{i} #gamma_{i}p_{T} + #slash{E}_{T} (GeV)",50,0,2000);
 	 CreateHisto("h_stage1_n_jets","# of cleaned jets", 10, -0.5, 9.5);
 	 CreateHisto("h_stage1_angle_photon_met","Angle between tight photon and MET", 42, 0, 4.2);
-	 CreateHisto("h_stage1_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02); 
-	 CreateHisto("h_stage1_jet_pt", "1st jet p_{T} [GeV]",40,0,1000);  
-	 CreateHisto("h_stage2_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage1_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02); 
+	 CreateHisto("h_stage1_jet_pt", "1st jet p_{T} (GeV)",40,0,1000);  
+	 CreateHisto("h_stage2_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage2_met_significance"," #slash{E}_{T} significance",60,0,600);  
-	 CreateHisto("h_stage3_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage3_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage3_met_significance"," #slash{E}_{T} significance",60,0,600);        
-	 CreateHisto("h_stage4_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage4_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage4_met_significance"," #slash{E}_{T} significance",60,0,600);      
-	 CreateHisto("h_stage5_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage5_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage5_met_significance"," #slash{E}_{T} significance",60,0,600);      
-	 CreateHisto("h_stage6_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage6_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage6_met_significance"," #slash{E}_{T} significance",60,0,600);  
-	 CreateHisto("h_stage7_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage7_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage7_met_significance"," #slash{E}_{T} significance",60,0,600);      
-	 CreateHisto("h_stage8_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage8_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage8_met_significance"," #slash{E}_{T} significance",60,0,600);  
-	 CreateHisto("h_stage9_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage9_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage9_met_significance"," #slash{E}_{T} significance",60,0,600);    
-	 CreateHisto("h_stage10_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage10_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage10_met_significance_25"," #slash{E}_{T} significance",60,0,600);
 	 CreateHisto("h_stage10_met_significance_26"," #slash{E}_{T} significance",60,0,600);	 
 	 CreateHisto("h_stage10_met_significance_27"," #slash{E}_{T} significance",60,0,600);	 
@@ -1131,7 +1190,7 @@ void MySelector::SlaveBegin(TTree * tree)
 	 CreateHisto("h_stage10_met_significance_39"," #slash{E}_{T} significance",60,0,600);	 
 	 CreateHisto("h_stage10_met_significance_40"," #slash{E}_{T} significance",60,0,600);		 
 	 	   
-	 CreateHisto("h_stage11_inverse_met","#slash{E}_{T}^{-1} [GeV^{-1}]", 50, 0, 0.02);
+	 CreateHisto("h_stage11_inverse_met","#slash{E}_{T}^{-1} (GeV^{-1})", 50, 0, 0.02);
 	 CreateHisto("h_stage11_met_significance_10"," #slash{E}_{T} significance",60,0,600);
 	 CreateHisto("h_stage11_met_significance_11"," #slash{E}_{T} significance",60,0,600);	 
 	 CreateHisto("h_stage11_met_significance"," #slash{E}_{T} significance",60,0,600);	 
@@ -1239,8 +1298,11 @@ void MySelector::BuildObjects() {
 	 
 	 Jets.clear();
 	 for (int i = 0; i < pfJets_ak5_; ++i) {
+	 //Shifting jet momentum for correction and up and down for JEC uncertainty 
+	 
     //  MyJet jet(pfJets_ak5_momentum_fP_fX[i]*(1-pfJets_ak5_jecUncertainty[i]),pfJets_ak5_momentum_fP_fY[i]*(1-pfJets_ak5_jecUncertainty[i]),pfJets_ak5_momentum_fP_fZ[i]*(1-pfJets_ak5_jecUncertainty[i]),pfJets_ak5_momentum_fE[i]*(1-pfJets_ak5_jecUncertainty[i]));
-      MyJet jet(pfJets_ak5_momentum_fP_fX[i],pfJets_ak5_momentum_fP_fY[i],pfJets_ak5_momentum_fP_fZ[i],pfJets_ak5_momentum_fE[i]);
+    //  MyJet jet(pfJets_ak5_momentum_fP_fX[i],pfJets_ak5_momentum_fP_fY[i],pfJets_ak5_momentum_fP_fZ[i],pfJets_ak5_momentum_fE[i]);
+      MyJet jet(pfJets_ak5_momentum_fP_fX[i]*pfJets_ak5_JECScale[i],pfJets_ak5_momentum_fP_fY[i]*pfJets_ak5_JECScale[i],pfJets_ak5_momentum_fP_fZ[i]*pfJets_ak5_JECScale[i],pfJets_ak5_momentum_fE[i]*pfJets_ak5_JECScale[i]);			
    //   MyJet jet(pfJets_ak5_momentum_fP_fX[i]*(1+pfJets_ak5_jecUncertainty[i]),pfJets_ak5_momentum_fP_fY[i]*(1+pfJets_ak5_jecUncertainty[i]),pfJets_ak5_momentum_fP_fZ[i]*(1+pfJets_ak5_jecUncertainty[i]),pfJets_ak5_momentum_fE[i]*(1+pfJets_ak5_jecUncertainty[i]));
 	
 			double jet_pt = jet.Pt();
@@ -1249,7 +1311,8 @@ void MySelector::BuildObjects() {
 	 	  jet.SetJetPt(jet_pt);
 			jet.SetJetEta(jet_eta);
 			jet.SetJetE(jet_E);
-			jet.SetJecUncert(pfJets_ak5_jecUncertainty[i]);			
+			jet.SetJecUncert(pfJets_ak5_jecUncertainty[i]);	
+			jet.SetJecScale(pfJets_ak5_JECScale[i]);					
 			jet.SetChargedHadronEnergy(pfJets_ak5_chargedHadronEnergy[i]);
 			jet.SetNeutralHadronEnergy(pfJets_ak5_neutralHadronEnergy[i]);
 			jet.SetPhotonEnergy(pfJets_ak5_photonEnergy[i]);			
@@ -1265,6 +1328,7 @@ void MySelector::BuildObjects() {
 			
 			Jets.push_back(jet);
 			}
+			
 	 sort(Jets.begin(), Jets.end(), LorentzVectorSortPt);
 	 
 	 
@@ -1368,6 +1432,7 @@ void MySelector::BuildObjects() {
 	
 		
 	MET.SetXYZM(met_pfMet_mEt_fX, met_pfMet_mEt_fY, 0, 0);
+	TypeOneMET.SetXYZM(met_pfType1CorrectedMet_mEt_fX, met_pfType1CorrectedMet_mEt_fY, 0, 0);	
 	CaloMET.SetXYZM(met_caloType1CorrectedMet_mEt_fX, met_caloType1CorrectedMet_mEt_fY, 0, 0);
 	metMET.SetXYZM(met_met_mEt_fX, met_met_mEt_fY, 0, 0);
 	
@@ -1403,15 +1468,6 @@ void MySelector::CreateHisto2D(const char * name, const char * title, int nbinsx
   h->SetTitle(name);
 	histo2.Add(name, h);
 }
-/*void MySelector::Fill(const char * name, double value)
-{
-  TH1F * h = histo[name];
-  if (h != 0)
-    h->Fill(value, Eventweight);
-  else {
-    std::cout << std::string("Histogram \"") + name + std::string("\" not existing. Did you misspell or forgot to create?") << std::endl;
-  }
-}*/
 
 void MySelector::Fill(const char * name, double value, double weight)
 {
@@ -1701,12 +1757,15 @@ Bool_t MySelector::Process(Long64_t entry)
 	// TString hlt = "hlt_trigger";
 			
 			
-	 Fill("h_reco_vert_n_vor", vertices_n); 
+	 Fill("h_reco_vert_n_vor", vertices_n);
+ 
+
+	#ifdef __MC	
 	 
-	 #ifdef __MC	
+	pdf_weight = 1*getPileUpWeight(); 	 
 
 	 Fill("h_met_vor", metMET.Pt());
-
+	
 	  	
 	 Eventweight *= getPileUpWeight();
 	 
@@ -1732,15 +1791,16 @@ Bool_t MySelector::Process(Long64_t entry)
 							}
 					}
 			}
+			
+		
+			
+			
 	 Fill("h_truth_ht", truth_ht);
 		
 	 
 	 #endif	 
 	 
 	 Fill("h_reco_vert_n_nach", vertices_n);	 
-
-	 
-	 double Ngen_Data = 0;
 	 
 	 /* Photons */
 	 
@@ -1775,25 +1835,26 @@ Bool_t MySelector::Process(Long64_t entry)
 	 vector<int> loose_muons;	 
 	 vector<int> soft_muons;	 
 	 
-   string ZGamma = "ZGamma_V02";
+   string ZGamma = "ZGamma_V09";
 	 
-   string ZGammaLL = "ZGammaLL_V02";
+   string ZGammaLL = "ZGammaLL_V09"; //
 	 
-   string ZGammaNuNu = "ZGammaNuNu_V02";
+   string ZGammaNuNu = "ZGammaNuNu_V09"; //
 	 
 	 string Pixel = "Pixel";
 	 	 
-	 string WGamma ="WGamma_V02";
+	 string WGamma ="WGamma_V09";
 	 
-	 string WGamma_20_30 = "WGamma_20_30_V07";
+	 string WGamma_20_30 = "WGamma_20_30_V09";
 	 
-	 string WGamma_30_50 = "WGamma_30_50_V07";	 
+	 string WGamma_30_50 = "WGamma_30_50_V09";	 
 	 
-	 string WGamma_50_130 = "WGamma_50_130_V07";
+	 string WGamma_50_130 = "WGamma_50_130_V09";
 	 
-	 string WGamma_130_inf = "WGamma_130_inf_V07";
+	 string WGamma_130_inf = "WGamma_130_inf_V09";
 	 
-	 string Signal_640_630 = "Signal_640_630";	 
+	 string Signal_640_630 = "Signal_640_630";
+	 	 
 	 ///////////////////* Start analysis  *////////////////////////
 	 	 
 
@@ -1838,8 +1899,11 @@ Bool_t MySelector::Process(Long64_t entry)
 	 
 	 for (unsigned int i = 0; i < Jets.size(); i++) {
 	//	cout << "neutral energy fraction: " << Jets[i].neutralHadronEnergy << "  energy :" << Jets[i].JetE <<	endl;
+	//		cout <<" JEts eta before:   " <<	Jets[i].JetEta << endl;	
 	 	if ( Jets[i].IsLooseIsolated() ) {
-				loose_jets.push_back(i);
+			loose_jets.push_back(i);
+	//		cout <<" JEts eta:   " <<	Jets[i].JetEta << endl;
+//			cout <<" loose jets eta:   " <<	Jets[loose_jets[i]].JetEta << endl;			
 
 		}
 	 }
@@ -1868,7 +1932,7 @@ bool right_event = false;
    if ( ZGamma.compare(BGName) == 0 ) {	
 	 		if (tight_photons.size() < 1) return kFALSE;
 		//	cout << "------------------------------------------------" << endl;	
-		  for ( int i = 0; i < GenParticles.size() ; i++) {	
+		  for ( unsigned int i = 0; i < GenParticles.size() ; i++) {	
 			//	cout << "gen id....  " << 	GenParticles[i].GenPDGID	<< "      gen status.....  " <<  GenParticles[i].GenStatus << endl;		 
 	 			if ( (fabs(GenParticles[i].GenPDGID) == 12 || fabs(GenParticles[i].GenPDGID) == 14 || fabs(GenParticles[i].GenPDGID) ==
 				16) && (GenParticles[i].GenStatus == 1) ) {
@@ -1939,14 +2003,14 @@ bool right_event = false;
 	 		
  #ifdef __MC
  			 
-	for( unsigned i = 0; i < pu_; i++){
+	for( int i = 0; i < pu_; i++){
      if (pu_BX[i] == 0){
 				Fill2("h2_vert_met",pu_trueNumInteractions[i],MET.Pt());
 				if ( tight_photons.size() == 1 ) Fill2("h2_vert_pt",pu_trueNumInteractions[i],Photons[tight_photons[0]].Pt());							
 				}		
      }
 		 
-  for ( int i = 0; i < GenParticles.size() ; i++) {
+  for ( unsigned int i = 0; i < GenParticles.size() ; i++) {
 	 		if (GenParticles[i].GenStatus == 1 && tight_photons.size() > 0) {
 					if (GenParticles[i].GenPDGID == 22 ) {
 					   Fill2("h2_truth_photon_DeltaR_relPt_before",GenParticles[i].DeltaR(Photons[tight_photons[0]]),((GenParticles[i].Pt()-Photons[tight_photons[0]].Pt())/GenParticles[i].Pt()));
@@ -2001,8 +2065,19 @@ bool right_event = false;
 //	if ( tight_photons.size() < 1 ) return kFA LSE; 
 	
 	 Fill("h_cutflow","all");
-	 
-	if ( !((metFilterBit & metFilterMask) == metFilterMask) ) return kFALSE;		 
+
+	pdf_id1 = gridParams_pdf_id1;
+	pdf_id2 = gridParams_pdf_id2;
+	pdf_scale = gridParams_pdf_scale;
+	pdf_x1 = gridParams_pdf_x1;
+	pdf_x2 = gridParams_pdf_x2;
+	pdf_selected = 0;
+	
+
+	if ( !((metFilterBit & metFilterMask) == metFilterMask) ){
+		pdfTree->Fill();
+		return kFALSE;
+	}		 
 	// bool cut_n_photon  = (Photons.size() > 0);
 
 	 
@@ -2016,9 +2091,10 @@ bool right_event = false;
 	double DeltaR = 10;
 	double DeltaR2 = 0;	
 		 
-	 #ifdef __Data
+	 #ifdef __Data   
 	 		
-		
+	// Analysis code doubled to process datadriven and MC at the same time, realized with ifdef		
+			
 /*	 cout << hltMap.size() << endl;
 	 for( TriggerMap::const_iterator tm = hltMap.begin();
             tm != hltMap.end(); ++tm ) {
@@ -2702,35 +2778,6 @@ double AngleGJ = 10;
   }	
 	
 	
-	
-
-
-
-/*	 if ( tight_photons.size() == 1 && fabs(Photons[tight_photons[0]].Eta()) < 1.4442 && PassMETTrigger() && MET.Pt() > 40 && Photons[tight_photons[0]].r9 > 0.9 && Photons[tight_photons[0]].Pt() > 40){
-			DeltaR = 10;		
-			for (unsigned int i = 0; i < loose_jets.size(); i++) {
-				DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
-				if ( Jets[loose_jets[i]].Pt()>30 && (DeltaR1 > 0.1 || (fabs((Jets[loose_jets[i]].Pt()/Photons[tight_photons[0]].Pt()) - 1)  > 0.5 ))){
-					AngleGJ1 = fabs(DeltaPhi(Jets[loose_jets[i]].Phi(),Photons[tight_photons[0]].Phi() ));
-					DeltaR2 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]); 
-	        if (DeltaR2 < DeltaR){
-				 	 DeltaR = DeltaR2;
-					 }
-				 }
-
-	    }
-			AngleGM2 = fabs(DeltaPhi(MET.Phi(),Photons[tight_photons[0]].Phi() ));		
-		  if (DeltaR > 0.4 && AngleGM2 > 0.4) {
-					Fill("h_denumerator_DeltaRCut2_DeltaPhiCut_PtCut_2", Photons[tight_photons[0]].Pt());
-				  if ( PassSignalTrigger() ) {
-						Fill("h_numerator_DeltaRCut2_DeltaPhiCut_PtCut_2", Photons[tight_photons[0]].Pt());
-						}							
-			}			
-	 	
-	 }		*/		
-
-
-
 	/*	
 		------------------------> ///////////////////////////////////	<------------------------
  	 ------------------------> /// >> Ready for some magic? << /// <------------------------
@@ -2928,7 +2975,10 @@ double AngleGJ = 10;
 				}
 			}	
 		
-	 if (!PassSignalTrigger() ) return kFALSE;
+	 if (!PassSignalTrigger() ) {
+		pdfTree->Fill();
+		return kFALSE;
+	}
 	 
 	 Fill("h_cutflow", "trigger");	 
 	 
@@ -2937,15 +2987,22 @@ double AngleGJ = 10;
 	 
 	 Fill("h_met_significance_before_preselection",met_pfMet_significance); 
 	 
-	 bool cut_met			  = (MET.Pt() > 100);
+	 bool cut_met = (MET.Pt() > 100);
 	  
-	 if (!cut_met) return kFALSE; // met at least 40 GeV
+	 if (!cut_met){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+// met at least 40 GeV
 
-
+//	cout << "test" << endl;
 	 Fill("h_cutflow", "#slash{E}_{T} > 100 GeV");
 	 	 
-	 if ( loose_photons.size() == 0 ) return kFALSE;
-	 
+	 if ( loose_photons.size() == 0 ){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+	// cout << "passed" << endl;
 	 Fill("h_cutflow", "# loose #gamma > 0");	
 	 
 	 // Investigate further control regions -> no tight (but at least one loose) photon	 
@@ -2953,14 +3010,14 @@ double AngleGJ = 10;
 	 double DeltaR1_before = 0;
 	 if ( tight_photons.size() == 0 ) {
 	 	 if (Photons[loose_photons[0]].Pt() > 40 && Photons[loose_photons[0]].r9 > 0.9 && fabs(Photons[loose_photons[0]].Eta()) < 1.4442 ) {
-		 	 for (int i = 0; i < loose_jets.size(); i++) { 
+		 	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
 	 			 DeltaR1_before = Photons[loose_photons[0]].DeltaR(Jets[loose_jets[i]]);
 				 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1_before > 0.1 || (fabs((Photons[loose_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[loose_photons[0]].Pt()) >
 					0.5 )) ) {
 					 cleaned_jets_control2.push_back(i);			 
      	  	}
 			 	}
-			 for (int i = 0; i < cleaned_jets_control2.size(); i++) { 
+			 for (unsigned int i = 0; i < cleaned_jets_control2.size(); i++) { 
     	 		HT_before += Jets[cleaned_jets_control2[i]].Pt(); 
 			 		}
 				if ( HT_before > 100 ) {	
@@ -2996,8 +3053,11 @@ double AngleGJ = 10;
 		 
 		  
 		 
-	 if ( tight_photons.size() == 0 ) return kFALSE;
-	 
+	 if ( tight_photons.size() == 0 ){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+	
 	 Fill("h_cutflow", "# tight #gamma > 0");		 
 	
 	////* From here on: at least one tight isolated ID photon with P_t > 50 in Barrel, MET > 40 *//////// 
@@ -3115,32 +3175,45 @@ double AngleGJ = 10;
    for (unsigned int i = 0; i < tight_photons.size(); i++) {
 	 	Fill("h_tight_photons_pt_cut_flow", Photons[tight_photons[i]].Pt());
 		 if (Photons[tight_photons[i]].Pt() > 40) {
-		 		cut_photons.push_back(i);
+		 		cut_photons.push_back(tight_photons[i]);
 				}
 		 }	
 	 
-	 if (cut_photons.size() == 0) return kFALSE;
+	 if (cut_photons.size() == 0){
+		pdfTree->Fill();
+		return kFALSE;
+	}
 	 
 	 Fill("h_cutflow", "tight #gamma p_{T} > 40 GeV");
+
+
+
+
 	 
 	 	 
    for (unsigned int i = 0; i < cut_photons.size(); i++) {
 		 if (Photons[cut_photons[i]].r9 > 0.9) {
-		 		cut_r9_photons.push_back(i);
+		 		cut_r9_photons.push_back(cut_photons[i]);
 				}
 		 }	 
 	 
-	 if (cut_r9_photons.size() == 0) return kFALSE;
+	 if (cut_r9_photons.size() == 0){
+		pdfTree->Fill();
+		return kFALSE;
+	}
 	 
 	 Fill("h_cutflow", "r9 > 0.9");	 
 	 
    for (unsigned int i = 0; i < cut_r9_photons.size(); i++) {
 		 if (fabs(Photons[cut_r9_photons[i]].Eta()) < 1.4442) {
-		 		cut_EB_photons.push_back(i);
+		 		cut_EB_photons.push_back(cut_r9_photons[i]);
 				}
 		 }
 		 
-	 if (cut_EB_photons.size() == 0) return kFALSE;	
+	 if (cut_EB_photons.size() == 0){
+		pdfTree->Fill();
+		return kFALSE;
+	}
 	 
 	 Fill("h_cutflow", "tight #gamma in barrel");	 
 	 
@@ -3158,13 +3231,6 @@ double AngleGJ = 10;
 	  }	 
 	 Fill("h_DeltaPhi_photon_jet_before", AngleGJ_ana);		
 		
-//	 if (Jets.size() < 2) return kFALSE;
-	 
-//	 Fill("h_ cut fl ow", "N_{Jets} > 1");
-	 	 
-//	 if (loose_jets.size() < 3) return kFALSE;	
-	  
-	// Fill("h_c ut flow","N_{loose Jets} > 2");
 	 
 	for (unsigned int i = 0; i < loose_jets.size(); i++) {	 
 	  double DRself = sqrt(((Jets[loose_jets[i]].Eta() - Photons[tight_photons[0]].Eta())*(Jets[loose_jets[i]].Eta() -
@@ -3179,10 +3245,6 @@ double AngleGJ = 10;
 	 DeltaR1 = 0;	
 	 DeltaR = 10;
 	 DeltaR2 = 0;
-	 
- // for (unsigned int j = 0; j < tight_photons.size(); j++) {	
-  // 	AngleGJ_ana = 10;
- 	//  AngleGJ1_ana = 0;
 					
 		for (unsigned int i = 0; i < loose_jets.size(); i++) {
 				DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
@@ -3195,25 +3257,12 @@ double AngleGJ = 10;
 				 }
 
 	    }
-		
-/*	 double DeltaR_N = 0;		
-	 double HT_N = 0;	
-	 for (int i = 0; i < loose_jets.size(); i++) { 
-	 	 DeltaR_N = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
-		 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
-				0.5 )) ) {
-       HT_N += Jets[loose_jets[i]].Pt(); 		 
-       }	
-			 		
-		Fill(DeltaR);	
-		Fill(HT_N);
-		Fill(MET.Pt());
-		Fill();
-			
-*/			
-	  if (DeltaR < 0.5 ) return kFALSE; 
-		
-		Fill("h_cutflow","#Delta(R)(1st #gamma, n. jet) > 0.5");
+				
+	if (DeltaR < 0.5 ){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+	Fill("h_cutflow","#Delta(R)(1st #gamma, n. jet) > 0.5");
 		
 	
 		
@@ -3221,7 +3270,8 @@ double AngleGJ = 10;
 	 double HT2 = 0;	
 	 double HT3 = 0;
 	 		
-	 for (int i = 0; i < loose_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
+	  if ( Jets[i].IsLooseIsolated() ) {
 	 	 DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 		 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
 				0.5 )) ) {
@@ -3231,11 +3281,14 @@ double AngleGJ = 10;
 		 if (	Jets[loose_jets[i]].Pt() > 30 && DeltaR1 < 0.1 && (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) <
 				0.5 ) ) {
 			 photon_matched_jets.push_back(i);			 
-       }			 	
+       }		
+			}	 	
 		 }
+		 
+		 		
 		
 	if ( tight_photons.size() > 1 ) {	 
-	 for (int i = 0; i < loose_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
 	 	 DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 		 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
 				0.5 )) && (fabs(Jets[loose_jets[i]].Eta() ) < 2.5 ) ) {
@@ -3245,7 +3298,7 @@ double AngleGJ = 10;
 		Fill("h_HT2",HT2);
 		}	
 		
-	 for (int i = 0; i < cleaned_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) { 
      HT += Jets[cleaned_jets[i]].Pt(); 
 		 }
 		 
@@ -3253,9 +3306,11 @@ double AngleGJ = 10;
 		Fill("h_pt_raw",Photons[tight_photons[0]].Pt());		
 		
 		
-		if( HT < 100 ) return kFALSE;	
-		
-		Fill("h_cutflow","H_{T} > 100 GeV");	
+	if( HT < 100 ) {
+		pdfTree->Fill();
+		return kFALSE;
+	}
+	Fill("h_cutflow","H_{T} > 100 GeV");	
 		
 	  double TransMassCheck = TMath::Sqrt(2*Photons[tight_photons[0]].Pt()*MET.Pt()*(1.- TMath::Cos(DeltaPhi(MET.Phi(),Photons[tight_photons[0]].Phi()))));	
 				
@@ -3266,6 +3321,7 @@ double AngleGJ = 10;
 			sum_photon_pt_before += Photons[loose_photons[i]].Pt();
 			} 
 	 double sum_signal_before = sum_photon_pt_before + MET.Pt();
+	 double sum_signal_before_TypeOne = sum_photon_pt_before + TypeOneMET.Pt();	 
 	 
 		Fill2("h2_met_sign_sigma",met_pfMet_significance,sum_signal_before);	
 			 		
@@ -3434,6 +3490,7 @@ double AngleGJ = 10;
 		if ( TransMassCheck > 100 && met_pfMet_significance > 10  && ((TransMassCheck < 300 && met_pfMet_significance > 80) || (TransMassCheck > 300 &&
 		met_pfMet_significance < 80) || (TransMassCheck < 300 && met_pfMet_significance < 80)) ){
 			Fill("h_METoverSqHT_double_control_3_regions_100_10_80", MET.Pt()/(TMath::Sqrt(HT)));
+			Fill("h_METoverSqHT_double_control_3_regions_100_10_80_16", MET.Pt()/(TMath::Sqrt(HT)));			
 		  }
 			
 		if ( TransMassCheck > 100 && ((TransMassCheck < 300 && met_pfMet_significance > 50) || (TransMassCheck > 300 && met_pfMet_significance < 50) || (TransMassCheck < 300 &&
@@ -3592,42 +3649,70 @@ double AngleGJ = 10;
 			Fill("h_Angle_MET_1jet_80",AngleMJ1_scale);				
 			Fill("h_InvMass_2jets_80", InvMassJets_scale);						 
 			}	
-
+								
+	 if (TransMassCheck < 100 || met_pfMet_significance < 10) {
+		pdfTree->Fill();
+		return kFALSE;
+	}
+	 
+	 Fill("h_cutflow","CR + SR");	 
+	 
+	double HT_hlt_hadronic = 0;
+	for (unsigned int i = 0; i < Jets.size(); i++) {
+		if (Jets[i].Pt() > 40 && fabs(Jets[i].Eta()) < 3.0){
+			 HT_hlt_hadronic += Jets[i].Pt();
+//			cout << "jet pt:  " << Jets[i].Pt() << "  fabs jet eta:   " << fabs(Jets[i].Eta()) << endl;
+			}
+	 	}
+	 
+	 
 	 	Fill("h_tight_photon_pt_before", Photons[tight_photons[0]].Pt());
 	  FillMETsign("h_MET_significance_array_norm_before",met_pfMet_significance); 		
 	  FillPerGev("h_MET_significance_per_gev_14_before",met_pfMet_significance);	
 		Fill("h_trans_mass_pt_before", TransMassCheck);
 		FillPerGev("h_trans_mass_pt_before_per_gev", TransMassCheck);		
 		Fill("h_met_significance_before", met_pfMet_significance);		
-	  Fill("h_sum_signal_over_sqrt_met_before",sum_signal_before/sqrt(MET.Pt()) );	
+	  Fill("h_sum_signal_over_sqrt_met_before",sum_signal_before/sqrt(MET.Pt()) );					
 	  Fill("h_n_photon_loose_before",loose_photons.size());	
 	  Fill("h_n_photon_tight_before",tight_photons.size());			
 	  Fill("h_n_jets_cleaned_before",cleaned_jets.size());
 		if ( cleaned_jets.size() > 0 ) { Fill("h_jet_pt_before", Jets[cleaned_jets[0]].Pt());}
 	  Fill("h_HT_before",HT);
+	  Fill("h_hlt_HT_before",HT_hlt_hadronic);		
 	  FillPerGev("h_HT_before_per_gev",HT);		
 	 	FillPerGev("h_tight_photon_pt_before_per_gev", Photons[tight_photons[0]].Pt());				
 		Fill("h_met_before",MET.Pt()); 		
 		
-					
-	 if (TransMassCheck < 100 || met_pfMet_significance < 10) return kFALSE;
+		Fill("h_TypeOneMet_before",TypeOneMET.Pt()); 		
+	  Fill("h_ST_before",sum_signal_before);		  
+		Fill("h_ST_TypeOne_before",sum_signal_before_TypeOne);	 
 	 
-	 Fill("h_cutflow","CR + SR");	 
+	 
+	 
+	 
 	 
 	 if ( TransMassCheck > 100 && met_pfMet_significance > 10  && ((TransMassCheck < 300 && met_pfMet_significance > 80) || (TransMassCheck > 300 &&
 		met_pfMet_significance < 80) || (TransMassCheck < 300 && met_pfMet_significance < 80)) ){
-	 	Fill("h_tight_photon_pt_CR", Photons[tight_photons[0]].Pt());
-	  FillMETsign("h_MET_significance_array_norm_CR",met_pfMet_significance); 		
+	  Fill("h_tight_photon_pt_CR", Photons[tight_photons[0]].Pt());
+	  FillMETsign("h_MET_significance_array_norm_CR",met_pfMet_significance);
+	  Fill("h_MET_significance_array_CR",met_pfMet_significance);
+	  Fill("h_MET_significance_array_CR_13",met_pfMet_significance);	
+					 		
 	  FillPerGev("h_MET_significance_per_gev_14_CR",met_pfMet_significance);	
-		Fill("h_trans_mass_pt_CR", TransMassCheck);
-		Fill("h_met_significance_CR", met_pfMet_significance);		
-	  Fill("h_sum_signal_over_sqrt_met_CR",sum_signal_before/sqrt(MET.Pt()) );	
+  	  Fill("h_trans_mass_pt_CR", TransMassCheck);
+	  Fill("h_met_significance_CR", met_pfMet_significance);		
+	  Fill("h_sum_signal_over_sqrt_met_CR",sum_signal_before/sqrt(MET.Pt()) );				
 	  Fill("h_n_photon_loose_CR",loose_photons.size());	
 	  Fill("h_n_photon_tight_CR",tight_photons.size());			
 	  Fill("h_n_jets_cleaned_CR",cleaned_jets.size());
 		if ( cleaned_jets.size() > 0 ) { Fill("h_jet_pt_CR", Jets[cleaned_jets[0]].Pt());}
 	  Fill("h_HT_CR",HT);
-		Fill("h_met_CR",MET.Pt()); 	 
+		Fill("h_met_CR",MET.Pt()); 	
+		
+		Fill("h_TypeOneMet_CR",TypeOneMET.Pt()); 		
+	  Fill("h_ST_CR",sum_signal_before);
+	  Fill("h_ST_TypeOne_CR",sum_signal_before_TypeOne);	
+			 
 		double AngleMJ1_CR = -1;
 	  double InvMassJets_CR = -1;				
 		if ( cleaned_jets.size() > 0){			 
@@ -3643,11 +3728,16 @@ double AngleGJ = 10;
 	 	
 	 
 
-	 if (TransMassCheck < 300 || met_pfMet_significance < 80) return kFALSE;
+	 if (TransMassCheck < 300 || met_pfMet_significance < 80){
+		pdfTree->Fill();
+		return kFALSE;
+	}
 	 
 	 Fill("h_cutflow","SR");
-	 
-		Fill2("h2_met_sign_sigma_SR",met_pfMet_significance,sum_signal_before);	 
+	 	
+	
+	
+	Fill2("h2_met_sign_sigma_SR",met_pfMet_significance,sum_signal_before);	 
 	 
 	 AngleGJ_ana = 10;		 		 
 	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
@@ -3720,7 +3810,8 @@ double AngleGJ = 10;
 	 if (HT > 100) Fill("h_METoverSqHT_scale_HT", MET.Pt()/(TMath::Sqrt(HT)));	 
 	 FillArraySignificance("h_METoverSqHT_array", MET.Pt()/(TMath::Sqrt(HT)));	 
 	 Fill("h_HToverMET", HT/MET.Pt());
-	 Fill("h_MET_significance",met_pfMet_significance);
+	 Fill("h_MET_significance",met_pfMet_significance);	 
+	 Fill("h_MET_significance_corrected",met_pfType1CorrectedMet_significance);	
 	 Fill("h_MET_significance_array",met_pfMet_significance);	 
 	 FillMETsign("h_MET_significance_array_norm",met_pfMet_significance);	 
 	 FillPerGev("h_MET_significance_per_gev_10",met_pfMet_significance);
@@ -3751,7 +3842,7 @@ double AngleGJ = 10;
 	 double sum_photon_pt = 0;
 	 double sum_photon_p = 0.000000001;
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 		 sum_pt += Jets[cleaned_jets[i]].Pt();
 	 	 sum_p += Jets[cleaned_jets[i]].P();	 
 	   }	 
@@ -3769,7 +3860,9 @@ double AngleGJ = 10;
 	 Fill("h_centrality", centrality);
 	 Fill("h_centrality_photon", centrality_photon);	 
 	 double sum_signal = sum_photon_pt + MET.Pt();
+	 double sum_signal_TypeOne = sum_photon_pt + TypeOneMET.Pt(); 
 	 Fill("h_sum_signal",sum_signal);
+	 Fill("h_ST_TypeOne",sum_signal_TypeOne);	 
 	 FillPerGev("h_sum_signal_per_gev",sum_signal);	 
 	 
 	 Fill2("h2_sigma_metsign",(sum_signal/(TMath::Sqrt(MET.Pt()))), met_pfMet_significance);	 
@@ -3799,7 +3892,7 @@ double AngleGJ = 10;
 				}
 						  
 	 Fill2("h2_sigmaIEIE_met_1", Photons[tight_photons[0]].sigmaIetaIeta, MET.Pt());
-	 for (int i = 0; i < cleaned_jets.size(); i++) {	 
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {	 
 	   Fill("h_bTagDisc",Jets[cleaned_jets[i]].bTagDisc);
 		 if (Jets[cleaned_jets[i]].bTagDisc > 0.5 ) {
 		 		b_jets.push_back(i);
@@ -3828,17 +3921,17 @@ double AngleGJ = 10;
 	 double EtaLow = 10;
 	 double EtaTest = 10;
 	 double EtaLow2 = 10;	
-	 int indexi = 0;
-	 int indexj = 0; 
+	 unsigned int indexi = 0;
+	 unsigned int indexj = 0; 
 	if ( cleaned_jets.size() > 1 ) {
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 	 	 EtaTest = fabs(Jets[cleaned_jets[i]].Eta());
 		 if (EtaTest < EtaLow){
 				EtaLow = EtaTest;
 				indexi = i;
 				}
 	   }
-	 for (int j = 0; j < cleaned_jets.size(); j++) {
+	 for (unsigned int j = 0; j < cleaned_jets.size(); j++) {
 	   if ( j != indexi ){
 		 		EtaTest = fabs(Jets[cleaned_jets[j]].Eta());
 				if (EtaTest < EtaLow2){
@@ -3936,7 +4029,7 @@ double AngleGJ = 10;
 			Fill("h_cleaned_jets_chargedM", Jets[cleaned_jets[i]].chargedMultiplicity );
 
 		}
-	 for (int i = 0; i < photon_matched_jets.size(); i++) {	 	 
+	 for (unsigned int i = 0; i < photon_matched_jets.size(); i++) {	 	 
 	   Fill("h_matched_jet_chargedHadronEnergy",Jets[photon_matched_jets[i]].chargedHadronEnergy );
 	   Fill("h_matched_jet_neutralHadronEnergy",Jets[photon_matched_jets[i]].neutralHadronEnergy );		 
 	   Fill("h_matched_jet_photonEnergy",Jets[photon_matched_jets[i]].photonEnergy );		 
@@ -3950,6 +4043,7 @@ double AngleGJ = 10;
 	 
 	/////////Fill met for all events
 	 Fill("h_met",MET.Pt());
+	 Fill("h_TypeOneMet",TypeOneMET.Pt());	 
 	 if (cleaned_jets.size() < 3 ){
 	 		Fill("h_met_nJetmax2",MET.Pt());
 			}
@@ -3970,7 +4064,7 @@ double AngleGJ = 10;
 	 Fill("h_AngleGM_all",AngleGMall);
 	 Fill("h_AngleGM_test",AngleGMtest);
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) { 
 			 double AngleMJ = fabs(DeltaPhi(MET.Phi(),Jets[cleaned_jets[i]].Phi() ));
        Fill("h_AngleMJ", AngleMJ);
 			 Fill("h_Eta_Jet", Jets[loose_jets[i]].Eta()); 
@@ -4095,20 +4189,90 @@ if (met_pfMet_significance < 200 && Sigma < 30){
 	Fill("h_lower_left_SR", Photons[tight_photons[0]].Pt() );		
   }
 
-// Search bins with sum_signal
+
+double HT_hlt = 0;
+double HT_photon_had = 0;
+
+for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
+	if (Jets[cleaned_jets[i]].Pt() > 30 && fabs(Jets[cleaned_jets[i]].Eta()) < 2.5){
+		HT_photon_had += Jets[cleaned_jets[i]].Pt();		
+		}
+	}
+for (unsigned int i = 0; i < loose_photons.size(); i++) {	
+	if (Photons[loose_photons[i]].Pt() > 110 && fabs(Photons[loose_photons[i]].Eta()) < 1.4442){
+		HT_photon_had += Photons[loose_photons[i]].Pt();		
+		}
+	}
 	
+ cout << "durchgekommen" << endl;	
+	 
+for (unsigned int i = 0; i < Jets.size(); i++) {
+	if (Jets[i].Pt() > 40 && fabs(Jets[i].Eta()) < 3.0){
+			HT_hlt += Jets[i].Pt();
+//			cout << "jet pt:  " << Jets[i].Pt() << "  fabs jet eta:   " << fabs(Jets[i].Eta()) << endl;
+			}
+	 }	 
+//cout << "HT_hlt:   " << HT_hlt << endl;
+//cout << "HT:   " << HT << endl;
+
+
+// Search bins with sum_signal
 if (met_pfMet_significance > 200 && sum_signal > 600 ){
-	Fill("h_upper_right_SR_sum_signal", Photons[tight_photons[0]].Pt() );	
+	pdf_selected = 1;
+	Fill("h_upper_right_SR_sum_signal", Photons[tight_photons[0]].Pt() );
+	Fill("h_upper_right_SR_ht", HT );	
+	Fill("h_upper_right_SR_ht_trigger", HT_hlt );	
+	Fill("h_upper_right_SR_ht_trigger_had", HT_photon_had );	
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_upper_right_SR_ht_trigger_had_2", HT_photon_had );	
+		}			
+  if (PassPhotonHadTrigger() ) {
+	Fill("h_upper_right_SR_ht_trigger_fired", HT_hlt );	
+	}	
+				
   }
 if (met_pfMet_significance < 200 && sum_signal > 600 ){
-	Fill("h_upper_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );		
+	pdf_selected = 2;
+	Fill("h_upper_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );
+	Fill("h_upper_left_SR_ht", HT );	
+	Fill("h_upper_left_SR_ht_trigger", HT_hlt );
+	Fill("h_upper_left_SR_ht_trigger_had", HT_photon_had );	
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_upper_left_SR_ht_trigger_had_2", HT_photon_had );	
+		}			
+  if (PassPhotonHadTrigger() ) {
+	Fill("h_upper_left_SR_ht_trigger_fired", HT_hlt );	
+	}			
   }	
 if (met_pfMet_significance > 200 && sum_signal < 600 ){
+	pdf_selected = 4;		
 	Fill("h_lower_right_SR_sum_signal", Photons[tight_photons[0]].Pt() );		
+	Fill("h_lower_right_SR_ht", HT );	
+	Fill("h_lower_right_SR_ht_trigger", HT_hlt );
+	Fill("h_lower_right_SR_ht_trigger_had", HT_photon_had );	
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_lower_right_SR_ht_trigger_had_2", HT_photon_had );	
+		}			
+  if (PassPhotonHadTrigger() ) {
+	Fill("h_lower_right_SR_ht_trigger_fired", HT_hlt );	
+	}			
   }	
 if (met_pfMet_significance < 200 && sum_signal < 600 ){
-	Fill("h_lower_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );		
-  }	
+	pdf_selected = 3;
+	Fill("h_lower_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );	
+	Fill("h_lower_left_SR_ht", HT );
+	Fill("h_lower_left_SR_ht_trigger", HT_hlt );
+	Fill("h_lower_left_SR_ht_trigger_had", HT_photon_had );	
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_lower_left_SR_ht_trigger_had_2", HT_photon_had );	
+		}				
+  if (PassPhotonHadTrigger() ) {
+	Fill("h_lower_left_SR_ht_trigger_fired", HT_hlt );	
+	}			
+  }
+
+	pdfTree->Fill();
+
 
 // Search bins with MT
 		
@@ -4135,8 +4299,6 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	
 	bool cut_pt_over_HT = ((Photons[tight_photons[0]].Pt()/HT) > 0.6); //for several BGs
 	
-	bool cut_photon_pt = (Photons[tight_photons[0]].Pt() > 100); //current signal region ->correlated to m_trans
-	
 	bool cut_angle_met_1jet = (AngleMJ1 > 0.9); //especially for gammaJets if necessary
 	
 	bool cut_sum_signal = (sum_signal > 500); // maybe not useful after gamma pt > 100
@@ -4145,12 +4307,6 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 																									//mass splitting in signal
 	
 	bool cut_angle_photon_met = (AngleGM > 0.9);	//for several BGs
-		
-/*	bool cut_pt_over_sq_met_10 = ( Photons[tight_photons[0]].Pt()/(TMath::Sqrt(MET.Pt())) > 10);	
-	bool cut_pt_over_sq_met_11 = ( Photons[tight_photons[0]].Pt()/(TMath::Sqrt(MET.Pt())) > 11);
-	bool cut_pt_over_sq_met_12 = ( Photons[tight_photons[0]].Pt()/(TMath::Sqrt(MET.Pt())) > 12);	 
-	bool cut_pt_over_sq_met_13 = ( Photons[tight_photons[0]].Pt()/(TMath::Sqrt(MET.Pt())) > 13);	
-	bool cut_pt_over_sq_met_14 = ( Photons[tight_photons[0]].Pt()/(TMath::Sqrt(MET.Pt())) > 14);		*/
 
 	bool cut_sum_signal_over_sq_met_25 = ( sum_signal/(TMath::Sqrt(MET.Pt())) > 25);	
 	bool cut_sum_signal_over_sq_met_26 = ( sum_signal/(TMath::Sqrt(MET.Pt())) > 26);
@@ -4373,7 +4529,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 sum_photon_pt = 0;
 	 sum_photon_p = 0.000000001;
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 		 sum_pt += Jets[cleaned_jets[i]].Pt();
 	 	 sum_p += Jets[cleaned_jets[i]].P();	 
 	   }	 
@@ -4404,7 +4560,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	    Fill("h_InvMassJetsRel_low",InvMassJets);			
 			}	
 	 	}
-	 Fill("h_n_cleaned_jets_low",cleaned_jets.size());	
+
 	 Fill("h_trans_mass_MET_Gamma_low",TransMassMETGamma);
 	 Fill("h_n_loose_photons_low",loose_photons.size());
 	 Fill("h_inverse_met_low", 1./MET.Pt());
@@ -4427,14 +4583,14 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 indexi = 0;
 	 indexj = 0; 
 	if ( cleaned_jets.size() > 1 ) {
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 	 	 EtaTest = fabs(Jets[cleaned_jets[i]].Eta());
 		 if (EtaTest < EtaLow){
 				EtaLow = EtaTest;
 				indexi = i;
 				}
 	   }
-	 for (int j = 0; j < cleaned_jets.size(); j++) {
+	 for (unsigned int j = 0; j < cleaned_jets.size(); j++) {
 	   if ( j != indexi ){
 		 		EtaTest = fabs(Jets[cleaned_jets[j]].Eta());
 				if (EtaTest < EtaLow2){
@@ -4499,7 +4655,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 sum_photon_pt = 0;
 	 sum_photon_p = 0.000000001;
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 		 sum_pt += Jets[cleaned_jets[i]].Pt();
 	 	 sum_p += Jets[cleaned_jets[i]].P();	 
 	   }	 
@@ -4565,14 +4721,14 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 indexi = 0;
 	 indexj = 0; 
 	if ( cleaned_jets.size() > 1 ) {
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 	 	 EtaTest = fabs(Jets[cleaned_jets[i]].Eta());
 		 if (EtaTest < EtaLow){
 				EtaLow = EtaTest;
 				indexi = i;
 				}
 	   }
-	 for (int j = 0; j < cleaned_jets.size(); j++) {
+	 for (unsigned int j = 0; j < cleaned_jets.size(); j++) {
 	   if ( j != indexi ){
 		 		EtaTest = fabs(Jets[cleaned_jets[j]].Eta());
 				if (EtaTest < EtaLow2){
@@ -4645,11 +4801,12 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
    
 	
  }	
- 
-	 
+ 	 
 
 /******************************* Data triggered by Signal trigger **************************/
+
 	 #endif 
+	 
 /***************************************************************************************************************************/
 /***************************************************************************************************************************/
 /***************************************************************************************************************************/
@@ -4657,12 +4814,13 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 /***************************************************************************************************************************/	 
 /***************************************************************************************************************************/	 
 /***************************************************************************************************************************/	
+
 #ifdef __MC	
 
 	double HT_control = 0;
 	if ( tight_photons.size() > 0 ) {
 		  Fill("h_photon_pt_for_control", Photons[tight_photons[0]].Pt());	
-	    for (int i = 0; i < loose_jets.size(); i++) { 
+	    for (unsigned int i = 0; i < loose_jets.size(); i++) { 
 	 	    DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 		    if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
 				0.5 )) ) {
@@ -4686,14 +4844,14 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
    for (unsigned int i = 0; i < tight_photons.size(); i++) {
 	   Fill("h_tight_photons_pt_cut_flow", Photons[tight_photons[i]].Pt());
 		 if (Photons[tight_photons[i]].Pt() > 40) {
-		 		cut_photons.push_back(i);
+		 		cut_photons.push_back(tight_photons[i]);
 				}
 		 }		 
 	 if (cut_photons.size() > 0) {
 	 	 
    for (unsigned int i = 0; i < cut_photons.size(); i++) {
 		 if (Photons[cut_photons[i]].r9 > 0.9) {
-		 		cut_r9_photons.push_back(i);
+		 		cut_r9_photons.push_back(cut_photons[i]);
 				}
 		 }	 
 	 
@@ -4701,12 +4859,12 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 
    for (unsigned int i = 0; i < cut_r9_photons.size(); i++) {
 		 if (fabs(Photons[cut_r9_photons[i]].Eta()) < 1.4442) {
-		 		cut_EB_photons.push_back(i);
+		 		cut_EB_photons.push_back(cut_r9_photons[i]);
 				}
 		 }
 		 
 	 if (cut_EB_photons.size() > 0){ 
-	 
+ 
 	 DeltaR1 = 0;	
 	 DeltaR = 10;
 	 DeltaR2 = 0;
@@ -4725,10 +4883,14 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	  if (DeltaR > 0.5 ){
 
 	 double HT = 0;  /* Defined as usually -> Must be modified if using corrected HT */		
-	 double HT2 = 0;	
 	 double HT3 = 0;
+	 
+//	 for (unsigned int i = 0; i < loose_jets.size(); i++) {	 
+//	 cout << "jet eta before cleaned:    "  << Jets[loose_jets[i]].JetEta << endl;	 
+//	 }
 	 		
-	 for (int i = 0; i < loose_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
+	  if ( Jets[i].IsLooseIsolated() ) {
 	 	 DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 		 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
 				0.5 )) ) {
@@ -4740,17 +4902,22 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 			 photon_matched_jets.push_back(i);			 
        }			 	
 		 }	
+		}
 		
-	 for (int i = 0; i < cleaned_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) { 
      HT += Jets[cleaned_jets[i]].Pt(); 
 		 }
+		 
+//	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {	 
+//	 cout << "jet eta after cleaned:    "  << Jets[cleaned_jets[i]].JetEta << endl;	 
+//	 }	
 	
 		
  if( HT > 100 ){ 
 	
  if (Photons[tight_photons[0]].Pt() > 40){ 
 
-	for ( int i = 0; i < GenParticles.size() ; i++) {
+	for ( unsigned int i = 0; i < GenParticles.size() ; i++) {
 	 		if (GenParticles[i].GenStatus == 1) {
 					if (GenParticles[i].GenPDGID == 22 ) {
 					Fill2("h2_truth_photon_DeltaR_relPt",GenParticles[i].DeltaR(Photons[tight_photons[0]]),((GenParticles[i].Pt()-Photons[tight_photons[0]].Pt())/GenParticles[i].Pt()));
@@ -4774,13 +4941,15 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		
 			}
 	
+		}
+		}		
+		}
 	}
 	}		
-	}
-	}
 	}		
-	}		
-	} 
+	}
+
+ 
 	// necessary to validate the e->gamma fake rate -> simulate the same cut stage
 				
 	
@@ -4790,7 +4959,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 double HT_for_QCD = 0;
 	 
 	 if ( tight_photons.size() > 0 ) {
-	 for (int i = 0; i < loose_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
 	 	 DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 		 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
 				0.5 )) ) {
@@ -4830,12 +4999,19 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 
 	 /* At least one photon is needed for this cut definition */
 	  
-	 if (!cut_met) return kFALSE; // met at least 100 GeV
+	 if (!cut_met){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+// met at least 100 GeV
 
 
 	 Fill("h_cutflow", "#slash{E}_{T} > 100 GeV");
 	 	 
-	 if ( loose_photons.size() == 0 ) return kFALSE;
+	 if ( loose_photons.size() == 0 ){
+		pdfTree->Fill();
+		return kFALSE;
+	}
 	 
 	 Fill("h_cutflow", "# loose #gamma > 0");	
 	 
@@ -4846,19 +5022,19 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 bool e_fake_control2 = false;
 	 if ( tight_photons.size() == 0 ) { // be orthogonal
 	 	 if (Photons[loose_photons[0]].Pt() > 40 && Photons[loose_photons[0]].r9 > 0.9 && fabs(Photons[loose_photons[0]].Eta()) < 1.4442 ) {
-		 	 for (int i = 0; i < loose_jets.size(); i++) { 
+		 	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
 	 			 DeltaR1_before = Photons[loose_photons[0]].DeltaR(Jets[loose_jets[i]]);
 				 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1_before > 0.1 || (fabs((Photons[loose_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[loose_photons[0]].Pt()) >
 					0.5 )) ) {
 					 cleaned_jets_control2.push_back(i);			 
      	  	}
 			 	}
-			 for (int i = 0; i < cleaned_jets_control2.size(); i++) { 
+			 for (unsigned int i = 0; i < cleaned_jets_control2.size(); i++) { 
     	 		HT_before += Jets[cleaned_jets_control2[i]].Pt(); 
 			 		}
 				if ( HT_before > 100 ) {
 				
-					for ( int i = 0; i < GenParticles.size() ; i++) {
+					for (unsigned int i = 0; i < GenParticles.size() ; i++) {
 	 				if (GenParticles[i].GenStatus == 1) {
 							if ((GenParticles[i].GenPDGID == 11 || GenParticles[i].GenPDGID == -11)) {
 									if(GenParticles[i].DeltaR(Photons[loose_photons[0]]) < 0.1 ) {
@@ -4900,7 +5076,10 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 
 	 
 	  
-	 if ( tight_photons.size() == 0 ) return kFALSE;
+	 if ( tight_photons.size() == 0 ){
+  	pdfTree->Fill();
+		return kFALSE;
+	}
 	 
 	 Fill("h_cutflow", "# tight #gamma > 0");	
 	
@@ -5021,7 +5200,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		 		
 	// Check here if e fake, before not possible because we need at least one tight photon 
   bool e_fake = false;
-	for ( int i = 0; i < GenParticles.size() ; i++) {
+	for (unsigned int i = 0; i < GenParticles.size() ; i++) {
 	 		if (GenParticles[i].GenStatus == 1) {
 					if ((GenParticles[i].GenPDGID == 11 || GenParticles[i].GenPDGID == -11)) {
 							if(GenParticles[i].DeltaR(Photons[tight_photons[0]]) < 0.1 ) {
@@ -5035,21 +5214,49 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	if ( Signal_640_630.compare(BGName) == 0 ) {
 		e_fake = false;
 		}
+	
 			
 	if ( !e_fake ) {	 	 
 //	if ( true ) {	
-
-
-	 if (cut_photons.size() == 0) return kFALSE;
+/*	for ( unsigned int i = 0; i < tight_photons.size(); i++) {
+	cout << "=============================================" << endl;
+	cout << "photon size:    " << tight_photons.size() << endl;	
+	cout << "photon pt:    " << Photons[tight_photons[i]].Pt() << endl;
+	cout << "photon eta:    " << Photons[tight_photons[i]].Eta() << endl;	
+	cout << "photon r9:    " << Photons[tight_photons[i]].r9 << endl;	
+	
+	}
+*/
+	 if (cut_photons.size() == 0){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+//	 cout << "da     " << endl;
 	 
 	 Fill("h_cutflow", "tight #gamma p_{T} > 40 GeV");
 	 
 
-	 if (cut_r9_photons.size() == 0) return kFALSE;
-	 
+	 if (cut_r9_photons.size() == 0){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+//	 cout << "da     " << endl;	 
 	 Fill("h_cutflow", "r9 > 0.9");	 
 
-	 if (cut_EB_photons.size() == 0) return kFALSE;	
+	 if (cut_EB_photons.size() == 0){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+/*	 cout << "da     " << endl;	
+	for ( unsigned int i = 0; i < tight_photons.size(); i++) {
+	cout << "=============================================" << endl;
+	cout << "photon size:    " << tight_photons.size() << endl;	
+	cout << "photon pt:    " << Photons[tight_photons[i]].Pt() << endl;
+	cout << "photon eta:    " << Photons[tight_photons[i]].Eta() << endl;	
+	cout << "photon r9:    " << Photons[tight_photons[i]].r9 << endl;	
+	
+	}
+*/
 	 
 	 Fill("h_cutflow", "tight #gamma in barrel");	 
 	 
@@ -5068,15 +5275,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	       }
 	  }	 
 	 Fill("h_DeltaPhi_photon_jet_before", AngleGJ_ana);		
-		
-//	 if (Jets.size() < 2) return kFALSE;
-	 
-//	 Fill("h_ cut fl ow", "N_{Jets} > 1");
-	 	 
-//	 if (loose_jets.size() < 3) return kFALSE;	
-	  
-	// Fill("h_c ut flow","N_{loose Jets} > 2");
-	 
+
 	for (unsigned int i = 0; i < loose_jets.size(); i++) {	 
 	  double DRself = sqrt(((Jets[loose_jets[i]].Eta() - Photons[tight_photons[0]].Eta())*(Jets[loose_jets[i]].Eta() -
 				Photons[tight_photons[0]].Eta())) + ((Jets[loose_jets[i]].Phi() - Photons[tight_photons[0]].Phi())*(Jets[loose_jets[i]].Phi() - Photons[tight_photons[0]].Phi())));
@@ -5091,10 +5290,6 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 DeltaR = 10;
 	 DeltaR2 = 0;
 	 
- // for (unsigned int j = 0; j < tight_photons.size(); j++) {	
-  // 	AngleGJ_ana = 10;
- 	//  AngleGJ1_ana = 0;
-	
 		for (unsigned int i = 0; i < loose_jets.size(); i++) {
 				DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 				if ( Jets[loose_jets[i]].Pt()>30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
@@ -5106,7 +5301,11 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 				 }
 
 	    }
-	  if (DeltaR < 0.5 ) return kFALSE; 
+	  if (DeltaR < 0.5 ){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+
 		
 		Fill("h_cutflow","#Delta(R)(1st #gamma, n. jet) > 0.5");
 		
@@ -5116,7 +5315,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 double HT2 = 0;	
 	 double HT3 = 0;
 	 		
-	 for (int i = 0; i < loose_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
 	 	 DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 		 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
 				0.5 )) ) {
@@ -5128,7 +5327,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		 }
 		
 	if ( tight_photons.size() > 1 ) {	 
-	 for (int i = 0; i < loose_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < loose_jets.size(); i++) { 
 	 	 DeltaR1 = Photons[tight_photons[0]].DeltaR(Jets[loose_jets[i]]);
 		 if (	Jets[loose_jets[i]].Pt() > 30 && (DeltaR1 > 0.1 || (fabs((Photons[tight_photons[0]].Pt() - Jets[loose_jets[i]].Pt())/ Photons[tight_photons[0]].Pt()) >
 				0.5 )) && (fabs(Jets[loose_jets[i]].Eta() ) < 2.5 ) ) {
@@ -5138,7 +5337,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		Fill("h_HT2",HT2);
 		}	
 		
-	 for (int i = 0; i < cleaned_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) { 
      HT += Jets[cleaned_jets[i]].Pt(); 
 		 }
 		 
@@ -5146,7 +5345,10 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		Fill("h_pt_raw",Photons[tight_photons[0]].Pt());		
 		
 		
-		if( HT < 100 ) return kFALSE;	
+	if( HT < 100 ){
+		pdfTree->Fill();
+		return kFALSE;
+	}
 		
 		
 		Fill("h_cutflow","H_{T} > 100 GeV");	
@@ -5179,6 +5381,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 			sum_photon_pt_before += Photons[loose_photons[i]].Pt();
 			} 
 	 double sum_signal_before = sum_photon_pt_before + MET.Pt();
+	 double sum_signal_before_TypeOne = sum_photon_pt_before + TypeOneMET.Pt();	 
 	 
 		Fill2("h2_met_sign_trans_mass",met_pfMet_significance,TransMassCheck);
 		Fill2("h2_met_sign_sigma",met_pfMet_significance,sum_signal_before);			 			
@@ -5358,7 +5561,8 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		  }
 		if ( TransMassCheck > 100 && met_pfMet_significance > 10  && ((TransMassCheck < 300 && met_pfMet_significance > 80) || (TransMassCheck > 300 &&
 		met_pfMet_significance < 80) || (TransMassCheck < 300 && met_pfMet_significance < 80)) ){
-			Fill("h_METoverSqHT_double_control_3_regions_100_10_80", MET.Pt()/(TMath::Sqrt(HT)));
+			Fill("h_METoverSqHT_double_control_3_regions_100_10_80", MET.Pt()/(TMath::Sqrt(HT)));			
+			Fill("h_METoverSqHT_double_control_3_regions_100_10_80_16", MET.Pt()/(TMath::Sqrt(HT)));	
 		  }
 		if ( TransMassCheck > 100 && ((TransMassCheck < 300 && met_pfMet_significance > 50) || (TransMassCheck > 300 && met_pfMet_significance < 50) || (TransMassCheck < 300 &&
 		met_pfMet_significance < 50)) ){
@@ -5442,7 +5646,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 			Fill("h_Angle_MET_1jet_100",AngleMJ1_scale);				
 			Fill("h_InvMass_2jets_100", InvMassJets_scale);
 			
-			for ( int i = 0; i < GenParticles.size() ; i++) {
+			for (unsigned int i = 0; i < GenParticles.size() ; i++) {
 	 		  if (GenParticles[i].GenStatus == 1 && tight_photons.size() > 0 && GenParticles[i].DeltaR(Photons[tight_photons[0]]) < 0.1 ) {
 				  Fill("h_total_number_reco_photons", tight_photons.size() );
 					
@@ -5527,6 +5731,22 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 			Fill("h_InvMass_2jets_80", InvMassJets_scale);						 
 			}
 					
+												
+	 if (TransMassCheck < 100 || met_pfMet_significance < 10){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+	
+  Fill("h_cutflow","CR + SR");	
+		 
+	double HT_hlt_hadronic = 0;
+	for (unsigned int i = 0; i < Jets.size(); i++) {
+		if (Jets[i].Pt() > 40 && fabs(Jets[i].Eta()) < 3.0){
+			 HT_hlt_hadronic += Jets[i].Pt();
+//			cout << "jet pt:  " << Jets[i].Pt() << "  fabs jet eta:   " << fabs(Jets[i].Eta()) << endl;
+			}
+	 	}	 
+			
 	 	Fill("h_tight_photon_pt_before", Photons[tight_photons[0]].Pt());
 	  FillMETsign("h_MET_significance_array_norm_before",met_pfMet_significance); 		
 	  FillPerGev("h_MET_significance_per_gev_14_before",met_pfMet_significance);	
@@ -5539,19 +5759,26 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	  Fill("h_n_jets_cleaned_before",cleaned_jets.size());
 		if ( cleaned_jets.size() > 0 ) { Fill("h_jet_pt_before", Jets[cleaned_jets[0]].Pt());}
 	  Fill("h_HT_before",HT);
+	  Fill("h_hlt_HT_before",HT_hlt_hadronic);		
 		Fill("h_met_before",MET.Pt()); 	
 	  FillPerGev("h_HT_before_per_gev",HT);		
-	 	FillPerGev("h_tight_photon_pt_before_per_gev", Photons[tight_photons[0]].Pt());			
+	 	FillPerGev("h_tight_photon_pt_before_per_gev", Photons[tight_photons[0]].Pt());	
 		
-												
-	 if (TransMassCheck < 100 || met_pfMet_significance < 10) return kFALSE;
+				
+		Fill("h_TypeOneMet_before",TypeOneMET.Pt()); 		
+	  Fill("h_ST_before",sum_signal_before);		  
+		Fill("h_ST_TypeOne_before",sum_signal_before_TypeOne);			
+	
+
 	 
-	 Fill("h_cutflow","CR + SR");	 
 	 
     if ( TransMassCheck > 100 && met_pfMet_significance > 10  && ((TransMassCheck < 300 && met_pfMet_significance > 80) || (TransMassCheck > 300 &&
 		met_pfMet_significance < 80) || (TransMassCheck < 300 && met_pfMet_significance < 80)) ){
+		
 	 	Fill("h_tight_photon_pt_CR", Photons[tight_photons[0]].Pt());
-	  FillMETsign("h_MET_significance_array_norm_CR",met_pfMet_significance); 		
+	  FillMETsign("h_MET_significance_array_norm_CR",met_pfMet_significance); 	  
+		Fill("h_MET_significance_array_CR",met_pfMet_significance);
+	  Fill("h_MET_significance_array_CR_13",met_pfMet_significance);			
 	  FillPerGev("h_MET_significance_per_gev_14_CR",met_pfMet_significance);	
 		Fill("h_trans_mass_pt_CR", TransMassCheck);
 		Fill("h_met_significance_CR", met_pfMet_significance);		
@@ -5562,7 +5789,11 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		if ( cleaned_jets.size() > 0 ) { Fill("h_jet_pt_CR", Jets[cleaned_jets[0]].Pt());}
 	  Fill("h_HT_CR",HT);
 		Fill("h_met_CR",MET.Pt()); 	
-		 
+		
+		Fill("h_TypeOneMet_CR",TypeOneMET.Pt()); 		
+	  Fill("h_ST_CR",sum_signal_before);		  
+		Fill("h_ST_TypeOne_CR",sum_signal_before_TypeOne);	
+			 
 		double AngleMJ1_CR = -1;
 	  double InvMassJets_CR = -1;				
 		if ( cleaned_jets.size() > 0){			 
@@ -5578,8 +5809,28 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 		
 
 	 
+//	cout << "test" << endl;
 
-	 if (TransMassCheck < 300 || met_pfMet_significance < 80) return kFALSE;
+	 if (TransMassCheck < 300 || met_pfMet_significance < 80){
+		pdfTree->Fill();
+		return kFALSE;
+	}
+
+//	cout << "passed" << endl;
+
+/*  for (int i = 0; i < cleaned_jets.size(); ++i) { 
+		cout << "=======================================================" << endl;
+		cout << "jet scale:   "	<<  Jets[cleaned_jets[i]].jecScale << endl;
+		cout << "jet pt:   "	<< Jets[cleaned_jets[i]].Pt() << endl;		
+		cout << "jet p:   "	<< Jets[cleaned_jets[i]].P() << endl;		
+		cout << "jet E 2:   "	<< Jets[cleaned_jets[i]].JetE << endl;
+		cout << "JET Eta:   "	<< Jets[i].JetEta << endl;			
+		cout << "jet Eta:   "	<< Jets[cleaned_jets[i]].JetEta << endl;
+		cout << "jet nC:   "	<< Jets[cleaned_jets[i]].nConstituents	<< endl;				
+		cout << "neutral hadron fraction:    " << Jets[cleaned_jets[i]].neutralHadronEnergy/Jets[cleaned_jets[i]].JetE << endl;
+		cout << "neutral em fraction:    " << Jets[cleaned_jets[i]].neutralEmEnergy/Jets[cleaned_jets[i]].JetE << endl;			
+	}
+*/ 
 	 
 	 Fill("h_cutflow","SR");
 	 
@@ -5675,7 +5926,14 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 cout << "-->> muon deltaB_iso/pt:  " <<Muons[loose_muons[i]].muon_deltaB_iso()/Muons[loose_muons[i]].muon_pt << endl;
 	 	 	}	*/
 			
-		
+//	cout << "para:  " << gridParams_pdf_scale << endl; 
+//	pdf_id1 = gridParams_pdf_id1;
+//	pdf_id2 = gridParams_pdf_id2;
+//	pdf_scale = gridParams_pdf_scale;
+//	pdf_x1 = gridParams_pdf_x1;
+//	pdf_x2 = gridParams_pdf_x2;
+//	pdf_selected = 0;
+	
 		  
 	 Fill("h_Phi_MET", fabs(MET.Phi()));	 
 	 Fill("h_METoverSqHT", MET.Pt()/(TMath::Sqrt(HT)));	    
@@ -5684,7 +5942,8 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 Fill("h_METoverSqHT_scale_HT", MET.Pt()/(TMath::Sqrt(HT)));	 
 	 FillArraySignificance("h_METoverSqHT_array", MET.Pt()/(TMath::Sqrt(HT)));	 
 	 Fill("h_HToverMET", HT/MET.Pt());
-	 Fill("h_MET_significance",met_pfMet_significance); 
+	 Fill("h_MET_significance",met_pfMet_significance);
+	 Fill("h_MET_significance_corrected",met_pfType01CorrectedMet_significance);	  
 	 Fill("h_MET_significance_array",met_pfMet_significance);	 
 	 FillMETsign("h_MET_significance_array_norm",met_pfMet_significance); 		
 	 FillPerGev("h_MET_significance_per_gev_10",met_pfMet_significance);
@@ -5705,7 +5964,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 double sum_photon_pt = 0;
 	 double sum_photon_p = 0.000000001;
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 		 sum_pt += Jets[cleaned_jets[i]].Pt();
 	 	 sum_p += Jets[cleaned_jets[i]].P();	 
 	   }	 
@@ -5723,7 +5982,9 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 Fill("h_centrality", centrality);
 	 Fill("h_centrality_photon", centrality_photon);	 
 	 double sum_signal = sum_photon_pt + MET.Pt();
+	 double sum_signal_TypeOne = sum_photon_pt + TypeOneMET.Pt();	 
 	 Fill("h_sum_signal",sum_signal);
+	 Fill("h_ST_TypeOne",sum_signal_TypeOne);	 
 	 FillPerGev("h_sum_signal_per_gev",sum_signal);	 
 	 
 	 Fill2("h2_sigma_metsign",(sum_signal/(TMath::Sqrt(MET.Pt()))), met_pfMet_significance);	 
@@ -5753,7 +6014,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 				}
 						  
 	 Fill2("h2_sigmaIEIE_met_1", Photons[tight_photons[0]].sigmaIetaIeta, MET.Pt());
-	 for (int i = 0; i < cleaned_jets.size(); i++) {	 
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {	 
 	   Fill("h_bTagDisc",Jets[cleaned_jets[i]].bTagDisc);
 		 if (Jets[cleaned_jets[i]].bTagDisc > 0.5 ) {
 		 		b_jets.push_back(i);
@@ -5781,17 +6042,17 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 double EtaLow = 10;
 	 double EtaTest = 10;
 	 double EtaLow2 = 10;	
-	 int indexi = 0;
-	 int indexj = 0; 
+	 unsigned int indexi = 0;
+	 unsigned int indexj = 0; 
 	if ( cleaned_jets.size() > 1 ) {
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 	 	 EtaTest = fabs(Jets[cleaned_jets[i]].Eta());
 		 if (EtaTest < EtaLow){
 				EtaLow = EtaTest;
 				indexi = i;
 				}
 	   }
-	 for (int j = 0; j < cleaned_jets.size(); j++) {
+	 for (unsigned int j = 0; j < cleaned_jets.size(); j++) {
 	   if ( j != indexi ){
 		 		EtaTest = fabs(Jets[cleaned_jets[j]].Eta());
 				if (EtaTest < EtaLow2){
@@ -5882,7 +6143,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 			//cout << "jec uncertainty:  " << Jets[cleaned_jets[i]].jecUncert << endl;
 		  }
 			
-	 for (int i = 0; i < photon_matched_jets.size(); i++) {	 	 
+	 for (unsigned int i = 0; i < photon_matched_jets.size(); i++) {	 	 
 	   Fill("h_matched_jet_chargedHadronEnergy",Jets[photon_matched_jets[i]].chargedHadronEnergy );
 	   Fill("h_matched_jet_neutralHadronEnergy",Jets[photon_matched_jets[i]].neutralHadronEnergy );		 
 	   Fill("h_matched_jet_photonEnergy",Jets[photon_matched_jets[i]].photonEnergy );		 
@@ -5896,6 +6157,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 
 	/////////Fill met for all events
 	 Fill("h_met",MET.Pt());
+	 Fill("h_TypeOneMet",TypeOneMET.Pt());	 
 	 if (cleaned_jets.size() < 3 ){
 	 		Fill("h_met_nJetmax2",MET.Pt());
 			}
@@ -5916,7 +6178,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 Fill("h_AngleGM_all",AngleGMall);
 	 Fill("h_AngleGM_test",AngleGMtest);
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) { 
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) { 
 			 double AngleMJ = fabs(DeltaPhi(MET.Phi(),Jets[cleaned_jets[i]].Phi() ));
        Fill("h_AngleMJ", AngleMJ);
 			 Fill("h_Eta_Jet", Jets[loose_jets[i]].Eta()); 
@@ -6041,21 +6303,80 @@ if (met_pfMet_significance < 200 && Sigma < 30){
 	Fill("h_lower_left_SR", Photons[tight_photons[0]].Pt() );		
   }	
 	
+double HT_hlt = 0;
+double HT_photon_had = 0;
+
+for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
+	if (Jets[cleaned_jets[i]].Pt() > 30 && fabs(Jets[cleaned_jets[i]].Eta()) < 2.5){
+		HT_photon_had += Jets[cleaned_jets[i]].Pt();		
+		}
+	}
+for (unsigned int i = 0; i < loose_photons.size(); i++) {	
+	if (Photons[loose_photons[i]].Pt() > 110 && fabs(Photons[loose_photons[i]].Eta()) < 1.4442){
+		HT_photon_had += Photons[loose_photons[i]].Pt();		
+		}
+	}
 	
+	
+	 
+for (unsigned int i = 0; i < Jets.size(); i++) {
+	if (Jets[i].Pt() > 40 && fabs(Jets[i].Eta()) < 3.0){
+			HT_hlt += Jets[i].Pt();
+//			cout << "jet pt:  " << Jets[i].Pt() << "  fabs jet eta:   " << fabs(Jets[i].Eta()) << endl;
+			}
+	 }	 
+/*
+cout << "HT_hlt:   " << HT_hlt << endl;
+cout << "HT:   " << HT << endl;
+cout << "HT photon had:   " << HT_photon_had << endl;
+cout << "number of jets   " << cleaned_jets.size() << endl;
+*/
+
 // Search bins with sum_signal
-	
 if (met_pfMet_significance > 200 && sum_signal > 600 ){
-	Fill("h_upper_right_SR_sum_signal", Photons[tight_photons[0]].Pt() );	
+	pdf_selected = 1;
+	Fill("h_upper_right_SR_sum_signal", Photons[tight_photons[0]].Pt() );
+	Fill("h_upper_right_SR_ht", HT );	
+	Fill("h_upper_right_SR_ht_trigger", HT_hlt );	
+	Fill("h_upper_right_SR_ht_trigger_had", HT_photon_had );
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_upper_right_SR_ht_trigger_had_2", HT_photon_had );	
+		}					
   }
 if (met_pfMet_significance < 200 && sum_signal > 600 ){
-	Fill("h_upper_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );		
+	pdf_selected = 2;
+	Fill("h_upper_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );
+	Fill("h_upper_left_SR_ht", HT );	
+	Fill("h_upper_left_SR_ht_trigger", HT_hlt );
+	Fill("h_upper_left_SR_ht_trigger_had", HT_photon_had );
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_upper_left_SR_ht_trigger_had_2", HT_photon_had );	
+		}											
   }	
 if (met_pfMet_significance > 200 && sum_signal < 600 ){
+	pdf_selected = 4;		
 	Fill("h_lower_right_SR_sum_signal", Photons[tight_photons[0]].Pt() );		
+	Fill("h_lower_right_SR_ht", HT );	
+	Fill("h_lower_right_SR_ht_trigger", HT_hlt );
+	Fill("h_lower_right_SR_ht_trigger_had", HT_photon_had );	
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_lower_right_SR_ht_trigger_had_2", HT_photon_had );	
+		}									
   }	
 if (met_pfMet_significance < 200 && sum_signal < 600 ){
-	Fill("h_lower_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );		
-  }	
+	pdf_selected = 3;
+	Fill("h_lower_left_SR_sum_signal", Photons[tight_photons[0]].Pt() );	
+	Fill("h_lower_left_SR_ht", HT );
+	Fill("h_lower_left_SR_ht_trigger", HT_hlt );
+	Fill("h_lower_left_SR_ht_trigger_had", HT_photon_had );	
+	if ( cleaned_jets.size() > 1 ) {
+		Fill("h_lower_left_SR_ht_trigger_had_2", HT_photon_had );	
+		}										
+  }
+
+
+	pdfTree->Fill();
+
 
 // Search bins with MT
 		
@@ -6082,8 +6403,6 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	bool cut_met_over_pt = ((MET.Pt()/Photons[tight_photons[0]].Pt()) > 1); //maybe reduces the right Vgamma
 	
 	bool cut_pt_over_HT = ((Photons[tight_photons[0]].Pt()/HT) > 0.6); //for several BGs
-	
-	bool cut_photon_pt = (Photons[tight_photons[0]].Pt() > 100); //current signal region ->correlated to m_trans
 	
 	bool cut_angle_met_1jet = (AngleMJ1 > 0.9); //especially for gammaJets if necessary
 	
@@ -6312,7 +6631,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 sum_photon_pt = 0;
 	 sum_photon_p = 0.000000001;
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 		 sum_pt += Jets[cleaned_jets[i]].Pt();
 	 	 sum_p += Jets[cleaned_jets[i]].P();	 
 	   }	 
@@ -6343,7 +6662,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	    Fill("h_InvMassJetsRel_low",InvMassJets);			
 			}	
 	 	}
-	 Fill("h_n_cleaned_jets_low",cleaned_jets.size());	
+	
 	 Fill("h_trans_mass_MET_Gamma_low",TransMassMETGamma);
 	 Fill("h_n_loose_photons_low",loose_photons.size());
 	 Fill("h_inverse_met_low", 1./MET.Pt());
@@ -6366,14 +6685,14 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 indexi = 0;
 	 indexj = 0; 
 	if ( cleaned_jets.size() > 1 ) {
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 	 	 EtaTest = fabs(Jets[cleaned_jets[i]].Eta());
 		 if (EtaTest < EtaLow){
 				EtaLow = EtaTest;
 				indexi = i;
 				}
 	   }
-	 for (int j = 0; j < cleaned_jets.size(); j++) {
+	 for (unsigned int j = 0; j < cleaned_jets.size(); j++) {
 	   if ( j != indexi ){
 		 		EtaTest = fabs(Jets[cleaned_jets[j]].Eta());
 				if (EtaTest < EtaLow2){
@@ -6405,7 +6724,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	bool cut_m_t 		= (TransMassMETGamma > 400);	*/
 
   bool e_fake = false;
-	for ( int i = 0; i < GenParticles.size() ; i++) {
+	for (unsigned int i = 0; i < GenParticles.size() ; i++) {
 	 		if (GenParticles[i].GenStatus == 1) {
 					if ((GenParticles[i].GenPDGID == 11 || GenParticles[i].GenPDGID == -11)) {
 							if(GenParticles[i].DeltaR(Photons[tight_photons[0]]) < 0.1 ) {
@@ -6452,7 +6771,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 sum_photon_pt = 0;
 	 sum_photon_p = 0.000000001;
 	 	 
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 		 sum_pt += Jets[cleaned_jets[i]].Pt();
 	 	 sum_p += Jets[cleaned_jets[i]].P();	 
 	   }	 
@@ -6518,14 +6837,14 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	 indexi = 0;
 	 indexj = 0; 
 	if ( cleaned_jets.size() > 1 ) {
-	 for (int i = 0; i < cleaned_jets.size(); i++) {
+	 for (unsigned int i = 0; i < cleaned_jets.size(); i++) {
 	 	 EtaTest = fabs(Jets[cleaned_jets[i]].Eta());
 		 if (EtaTest < EtaLow){
 				EtaLow = EtaTest;
 				indexi = i;
 				}
 	   }
-	 for (int j = 0; j < cleaned_jets.size(); j++) {
+	 for (unsigned int j = 0; j < cleaned_jets.size(); j++) {
 	   if ( j != indexi ){
 		 		EtaTest = fabs(Jets[cleaned_jets[j]].Eta());
 				if (EtaTest < EtaLow2){
@@ -6560,7 +6879,7 @@ if (met_pfMet_significance < 200 && TransMassMETGamma < 500){
 	
 	
   bool e_fake = false;
-	for ( int i = 0; i < GenParticles.size() ; i++) {
+	for (unsigned int i = 0; i < GenParticles.size() ; i++) {
 	 		if (GenParticles[i].GenStatus == 1) {
 					if ((GenParticles[i].GenPDGID == 11 || GenParticles[i].GenPDGID == -11)) {
 							if(GenParticles[i].DeltaR(Photons[tight_photons[0]]) < 0.1 ) {

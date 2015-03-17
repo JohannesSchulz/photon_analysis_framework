@@ -48,7 +48,7 @@ const Int_t kMaxmuons_muonsFromCosmics = 23*10;
 const Int_t kMaxelectrons_gsfElectrons = 8*10;
 const Int_t kMaxphotons_pfPhotonTranslator_pfphot = 3*10;
 const Int_t kMaxphotons_photons = 8*10;
-const Int_t kMaxpfJets_ak5 = 13*10;
+const Int_t kMaxpfJets_ak5 = 150*10;
 const Int_t kMaxpfJets_ak5chs = 34*10;
 
 class DataSelector : public TSelector {
@@ -255,6 +255,13 @@ public :
    UInt_t          met_tcMet_mEt_fBits;
    Double_t        met_tcMet_mEt_fX;
    Double_t        met_tcMet_mEt_fY;
+
+   Float_t         gridParams_pdf_id1;
+   Float_t         gridParams_pdf_id2;
+   Float_t         gridParams_pdf_scale;
+   Float_t         gridParams_pdf_x1;
+   Float_t         gridParams_pdf_x2;
+   vector<string>  *gridParamStr;
    Int_t           muons_muons_;
    UChar_t         muons_muons_type[kMaxmuons_muons];   //[muons_muons_]
    UChar_t         muons_muons_bestTrackType[kMaxmuons_muons];   //[muons_muons_]
@@ -685,7 +692,8 @@ public :
    Double_t        photons_photons_momentum_fP_fY[kMaxphotons_photons];   //[photons_photons_]
    Double_t        photons_photons_momentum_fP_fZ[kMaxphotons_photons];   //[photons_photons_]
    Double_t        photons_photons_momentum_fE[kMaxphotons_photons];   //[photons_photons_]
-   Int_t           pfJets_ak5_;
+   Int_t           pfJets_ak5_;	
+	 Float_t				 pfJets_ak5_JECScale[kMaxpfJets_ak5];   //[pfJets_ak5_]	
    Int_t           pfJets_ak5_phyDefFlavour[kMaxpfJets_ak5];   //[pfJets_ak5_]
    Int_t           pfJets_ak5_algDefFlavour[kMaxpfJets_ak5];   //[pfJets_ak5_]
    Float_t         pfJets_ak5_jetCharge[kMaxpfJets_ak5];   //[pfJets_ak5_]
@@ -732,9 +740,10 @@ public :
    Double_t        pfJets_ak5_momentum_fP_fY[kMaxpfJets_ak5];   //[pfJets_ak5_]
    Double_t        pfJets_ak5_momentum_fP_fZ[kMaxpfJets_ak5];   //[pfJets_ak5_]
    Double_t        pfJets_ak5_momentum_fE[kMaxpfJets_ak5];   //[pfJets_ak5_]
- //map<TString,float> pfJets_ak5_jecScaleFactors[kMaxpfJets_ak5];
+   map<TString,float> pfJets_ak5_jecScaleFactors[kMaxpfJets_ak5];
    Float_t         pfJets_ak5_jecUncertainty[kMaxpfJets_ak5];   //[pfJets_ak5_]
-   Int_t           pfJets_ak5chs_;
+   Int_t           pfJets_ak5chs_;	 
+	 Float_t				 pfJets_ak5chs_JECScale[kMaxpfJets_ak5chs];   //[pfJets_ak5_]	
    Int_t           pfJets_ak5chs_phyDefFlavour[kMaxpfJets_ak5chs];   //[pfJets_ak5chs_]
    Int_t           pfJets_ak5chs_algDefFlavour[kMaxpfJets_ak5chs];   //[pfJets_ak5chs_]
    Float_t         pfJets_ak5chs_jetCharge[kMaxpfJets_ak5chs];   //[pfJets_ak5chs_]
@@ -781,7 +790,7 @@ public :
    Double_t        pfJets_ak5chs_momentum_fP_fY[kMaxpfJets_ak5chs];   //[pfJets_ak5chs_]
    Double_t        pfJets_ak5chs_momentum_fP_fZ[kMaxpfJets_ak5chs];   //[pfJets_ak5chs_]
    Double_t        pfJets_ak5chs_momentum_fE[kMaxpfJets_ak5chs];   //[pfJets_ak5chs_]
- //map<TString,float> pfJets_ak5chs_jecScaleFactors[kMaxpfJets_ak5chs];
+   map<TString,float> pfJets_ak5chs_jecScaleFactors[kMaxpfJets_ak5chs];
    Float_t         pfJets_ak5chs_jecUncertainty[kMaxpfJets_ak5chs];   //[pfJets_ak5chs_]
 
    // List of branches
@@ -1400,7 +1409,8 @@ public :
    TBranch        *b_photons_photons_momentum_fP_fY;   //!
    TBranch        *b_photons_photons_momentum_fP_fZ;   //!
    TBranch        *b_photons_photons_momentum_fE;   //!
-   TBranch        *b_pfJets_ak5_;   //!
+   TBranch        *b_pfJets_ak5_;   //!   
+	 TBranch        *b_pfJets_ak5_JECScale;   //!	
    TBranch        *b_pfJets_ak5_phyDefFlavour;   //!
    TBranch        *b_pfJets_ak5_algDefFlavour;   //!
    TBranch        *b_pfJets_ak5_jetCharge;   //!
@@ -1448,7 +1458,8 @@ public :
    TBranch        *b_pfJets_ak5_momentum_fP_fZ;   //!
    TBranch        *b_pfJets_ak5_momentum_fE;   //!
    TBranch        *b_pfJets_ak5_jecUncertainty;   //!
-   TBranch        *b_pfJets_ak5chs_;   //!
+   TBranch        *b_pfJets_ak5chs_;   //!	 
+	 TBranch        *b_pfJets_ak5chs_JECScale;   //!	
    TBranch        *b_pfJets_ak5chs_phyDefFlavour;   //!
    TBranch        *b_pfJets_ak5chs_algDefFlavour;   //!
    TBranch        *b_pfJets_ak5chs_jetCharge;   //!
@@ -1496,6 +1507,14 @@ public :
    TBranch        *b_pfJets_ak5chs_momentum_fP_fZ;   //!
    TBranch        *b_pfJets_ak5chs_momentum_fE;   //!
    TBranch        *b_pfJets_ak5chs_jecUncertainty;   //!
+
+
+   TBranch        *b_pdf_id1;   //!
+   TBranch        *b_pdf_id2;   //!
+   TBranch        *b_pdf_scale;   //!
+   TBranch        *b_pdf_x1;   //!
+   TBranch        *b_pdf_x2;   //!
+   TBranch        *b_gridParamStr;   //!
 
 
    DataSelector(TTree * /*tree*/ =0) : fChain(0) ,l1Map("l1"), hltMap("hlt"){ }
@@ -1555,7 +1574,16 @@ void DataSelector::Init(TTree *tree)
  //  hltMap.addOutput( *fChain);
 //   l1Map.addOutput( *fChain);
 //	 l1Map.checkInput();
-//   hltMap.checkInput(); 
+//   hltMap.checkInput();
+//
+//     
+   fChain->SetBranchAddress("gridParams_pdf_id1", &gridParams_pdf_id1, &b_pdf_id1);
+   fChain->SetBranchAddress("gridParams_pdf_id2", &gridParams_pdf_id2, &b_pdf_id2);
+   fChain->SetBranchAddress("gridParams_pdf_scale", &gridParams_pdf_scale, &b_pdf_scale);
+   fChain->SetBranchAddress("gridParams_pdf_x1", &gridParams_pdf_x1, &b_pdf_x1);
+   fChain->SetBranchAddress("gridParams_pdf_x2", &gridParams_pdf_x2, &b_pdf_x2);
+   fChain->SetBranchAddress("gridParamStr", &gridParamStr, &b_gridParamStr);
+ 
    fChain->SetBranchAddress("isRealData", &isRealData, &b_isRealData);
    fChain->SetBranchAddress("runNumber", &runNumber, &b_runNumber);
    fChain->SetBranchAddress("eventNumber", &eventNumber, &b_eventNumber);
@@ -2172,6 +2200,7 @@ void DataSelector::Init(TTree *tree)
    fChain->SetBranchAddress("photons_photons.momentum.fP.fZ", photons_photons_momentum_fP_fZ, &b_photons_photons_momentum_fP_fZ);
    fChain->SetBranchAddress("photons_photons.momentum.fE", photons_photons_momentum_fE, &b_photons_photons_momentum_fE);
    fChain->SetBranchAddress("pfJets_ak5", &pfJets_ak5_, &b_pfJets_ak5_);
+   fChain->SetBranchAddress("pfJets_ak5.JECScale", pfJets_ak5_JECScale, &b_pfJets_ak5_JECScale);	 
    fChain->SetBranchAddress("pfJets_ak5.phyDefFlavour", pfJets_ak5_phyDefFlavour, &b_pfJets_ak5_phyDefFlavour);
    fChain->SetBranchAddress("pfJets_ak5.algDefFlavour", pfJets_ak5_algDefFlavour, &b_pfJets_ak5_algDefFlavour);
    fChain->SetBranchAddress("pfJets_ak5.jetCharge", pfJets_ak5_jetCharge, &b_pfJets_ak5_jetCharge);
@@ -2219,7 +2248,8 @@ void DataSelector::Init(TTree *tree)
    fChain->SetBranchAddress("pfJets_ak5.momentum.fP.fZ", pfJets_ak5_momentum_fP_fZ, &b_pfJets_ak5_momentum_fP_fZ);
    fChain->SetBranchAddress("pfJets_ak5.momentum.fE", pfJets_ak5_momentum_fE, &b_pfJets_ak5_momentum_fE);
    fChain->SetBranchAddress("pfJets_ak5.jecUncertainty", pfJets_ak5_jecUncertainty, &b_pfJets_ak5_jecUncertainty);
-   fChain->SetBranchAddress("pfJets_ak5chs", &pfJets_ak5chs_, &b_pfJets_ak5chs_);
+   fChain->SetBranchAddress("pfJets_ak5chs", &pfJets_ak5chs_, &b_pfJets_ak5chs_);   
+	 fChain->SetBranchAddress("pfJets_ak5chs.JECScale", pfJets_ak5chs_JECScale, &b_pfJets_ak5chs_JECScale);
    fChain->SetBranchAddress("pfJets_ak5chs.phyDefFlavour", pfJets_ak5chs_phyDefFlavour, &b_pfJets_ak5chs_phyDefFlavour);
    fChain->SetBranchAddress("pfJets_ak5chs.algDefFlavour", pfJets_ak5chs_algDefFlavour, &b_pfJets_ak5chs_algDefFlavour);
    fChain->SetBranchAddress("pfJets_ak5chs.jetCharge", pfJets_ak5chs_jetCharge, &b_pfJets_ak5chs_jetCharge);
